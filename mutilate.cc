@@ -170,6 +170,12 @@ void agent() {
 
     options_t options;
     memcpy(&options, request.data(), sizeof(options));
+    
+    if (args.depth_given) {
+      options.depth = args.depth_arg;
+    }
+    
+    V("depth = %d\n", options.depth);
 
     vector<string> servers;
 
@@ -1076,10 +1082,9 @@ void args_to_options(options_t* options) {
   D("options->records = %d", options->records);
 
   if (!options->records) options->records = 1;
-  strcpy(options->keysize, args.keysize_arg);
-  //  options->keysize = args.keysize_arg;
-  strcpy(options->valuesize, args.valuesize_arg);
-  //  options->valuesize = args.valuesize_arg;
+  strncpy(options->keysize, args.keysize_arg, sizeof(options->keysize));
+  strncpy(options->valuesize, args.valuesize_arg, sizeof(options->valuesize));
+  strncpy(options->numreqperconn, args.numreqperconn_arg, sizeof(options->numreqperconn));
   options->update = args.update_arg;
   options->time = args.time_arg;
   options->loadonly = args.loadonly_given;

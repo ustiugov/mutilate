@@ -208,9 +208,10 @@ private:
   double max;
 };
 
-Generator* createGenerator(std::string str);
 Generator* createFacebookKey();
 Generator* createFacebookValue();
 Generator* createFacebookIA();
+Generator* createGenerator(std::string str);
+void deleteGenerator(Generator* gen);
 
 #endif // GENERATOR_H

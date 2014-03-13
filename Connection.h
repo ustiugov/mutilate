@@ -105,4 +105,25 @@ private:
   Generator *keysize;
   KeyGenerator *keygen;
   Generator *iagen;
+  
+  // Tracks the number of requests made on the current socket
+  // Used to implement the "numreqperconn" feature  
+  Generator* numreq_threshold_gen;
+  unsigned long numreq_count;
+  unsigned long numreq_threshold;
+  
+  // Regenerates the threshold and resets the counter
+  void reset_numreq_threshold();
+  
+  // Specifies whether a connection to the server has been made
+  bool is_connected_to_server();
+  
+  // Attempts to connect to the specified server; true if successful
+  bool connect_to_server();
+  
+  // Disconnects from the server; true if successful, false if not connected
+  bool disconnect_from_server();
+  
+  // Disconnects from the server, if connected, and reconnects; true on success
+  bool reset_connection();
 };

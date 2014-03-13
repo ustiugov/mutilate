@@ -152,8 +152,16 @@ Command-line Options
           --affinity                Set CPU affinity for threads, round-robin
       -c, --connections=INT         Connections to establish per server.  
                                       (default=`1')
-      -d, --depth=INT               Maximum depth to pipeline requests.  
-                                      (default=`1')
+      -n, --numreqperconn=STRING    Number of requests per connection
+                                      (distribution). Once a connection reaches
+                                      this number, it is torn down and re-started.
+                                      This option facilitates experiments involving
+                                      ongoing opening and closing of connections to
+                                      the memcached server. Default behaviour is to
+                                      use the same connection for all requests.
+                                      (default=`0')
+      -d, --depth=INT               Maximum depth to pipeline requests. Agents may
+                                      locally override this setting.  (default=`1')
       -R, --roundrobin              Assign threads to servers in round-robin 
                                       fashion.  By default, each thread connects to 
                                       every server.

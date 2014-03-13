@@ -39,16 +39,13 @@ Connection::Connection(struct event_base* _base, struct evdns_base* _evdns,
 
   last_tx = last_rx = 0.0;
 
-  bev = bufferevent_socket_new(base, -1, BEV_OPT_CLOSE_ON_FREE);
-  bufferevent_setcb(bev, bev_read_cb, bev_write_cb, bev_event_cb, this);
-  bufferevent_enable(bev, EV_READ | EV_WRITE);
-
-  if (bufferevent_socket_connect_hostname(bev, evdns, AF_UNSPEC,
-                                          hostname.c_str(),
-                                          atoi(port.c_str())))
+  if (!connect_to_server())
     DIE("bufferevent_socket_connect_hostname()");
 
   timer = evtimer_new(base, timer_cb, this);
+  
+  numreq_threshold_gen = createGenerator(options.numreqperconn);
+  reset_numreq_threshold();
 }
 
 Connection::~Connection() {
@@ -57,7 +54,8 @@ Connection::~Connection() {
 
   // FIXME:  W("Drain op_q?");
 
-  bufferevent_free(bev);
+  disconnect_from_server();
+  deleteGenerator(numreq_threshold_gen);
 
   delete iagen;
   delete keygen;
@@ -232,6 +230,21 @@ void Connection::drive_write_machine(double now) {
   struct timeval tv;
 
   if (check_exit_condition(now)) return;
+  
+  // Reset the connection if the threshold has been reached.
+  // Note that the default behaviour is to have a threshold fixed at 0.
+  // This will produce a generated value of -1, which will never cause a reset.
+  // This code deliberately takes advantage of (0 - 1) == ULONG_MAX.
+  ++numreq_count;
+  
+  if (numreq_count > numreq_threshold) {
+    reset_numreq_threshold();
+    
+    if (!reset_connection())
+      DIE("error resetting connection on reaching threshold");
+    
+    D("threshold reached; connection reset, new threshold = %lu\n", numreq_threshold);
+  }
 
   while (1) {
     switch (write_state) {
@@ -325,10 +338,10 @@ void Connection::event_callback(short events) {
                      (void *) &one, sizeof(one)) < 0)
         DIE("setsockopt()");
     }
-
+    
     if (options.sasl)
       issue_sasl();
-    else
+    else if (read_state == INIT_READ) // Only if it wasn't a threshold reset
       read_state = IDLE;  // This is the most important part!
   } else if (events & BEV_EVENT_ERROR) {
     int err = bufferevent_socket_get_dns_error(bev);
@@ -639,4 +652,49 @@ void Connection::start_loading() {
     issue_set(key, &random_char[index], valuesize->generate());
     loader_issued++;
   }
+}
+
+void Connection::reset_numreq_threshold() {
+    numreq_count = 0;
+    numreq_threshold = (unsigned long)numreq_threshold_gen->generate() - 1;
+    
+    // Set an appropriate minimum to avoid breaking due to too many resets
+    if (numreq_threshold < 20)
+      numreq_threshold = 20;
+}
+
+bool Connection::is_connected_to_server() {
+    return (bev != NULL);
+}
+
+bool Connection::connect_to_server() {
+    if (is_connected_to_server())
+      return false;
+    
+    bev = bufferevent_socket_new(base, -1, BEV_OPT_CLOSE_ON_FREE);
+    
+    bufferevent_setcb(bev, bev_read_cb, bev_write_cb, bev_event_cb, this);
+    bufferevent_enable(bev, EV_READ | EV_WRITE);
+
+    if (bufferevent_socket_connect_hostname(bev, evdns, AF_UNSPEC,
+                                            hostname.c_str(),
+                                            atoi(port.c_str())))
+      return false;
+  
+    return true;
+}
+
+bool Connection::disconnect_from_server() {
+    if (!is_connected_to_server())
+      return false;
+    
+    bufferevent_free(bev);
+    
+    bev = NULL;
+    
+    return true;
+}
+
+bool Connection::reset_connection() {
+    return (disconnect_from_server() && connect_to_server());
 }

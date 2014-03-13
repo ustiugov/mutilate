@@ -5,6 +5,7 @@
 
 typedef struct {
   int connections;
+  char numreqperconn[32];
   bool blocking;
   double lambda;
   int qps;
