@@ -37,7 +37,8 @@ option "connections" c "Connections to establish per server." int default="1"
 option "numreqperconn" n "Number of requests per connection (distribution). \
 Once a connection reaches this number, it is torn down and re-started. \
 This option facilitates experiments involving ongoing opening and closing \
-of connections to the memcached server. Default behaviour is to use the \
+of connections to the memcached server; it is passed to all agents and \
+ignored on the master which takes samples. Default behaviour is to use the \
 same connection for all requests." string default="0"
 option "depth" d "Maximum depth to pipeline requests. Agents may locally \
 override this setting." int default="1"

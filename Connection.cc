@@ -20,7 +20,7 @@ Connection::Connection(struct event_base* _base, struct evdns_base* _evdns,
                        string _hostname, string _port, options_t _options,
                        bool sampling) :
   hostname(_hostname), port(_port), start_time(0),
-  stats(sampling), options(_options), base(_base), evdns(_evdns)
+  stats(sampling), options(_options), base(_base), evdns(_evdns), bev(NULL)
 {
   valuesize = createGenerator(options.valuesize);
   keysize = createGenerator(options.keysize);
@@ -44,7 +44,11 @@ Connection::Connection(struct event_base* _base, struct evdns_base* _evdns,
 
   timer = evtimer_new(base, timer_cb, this);
   
-  numreq_threshold_gen = createGenerator(options.numreqperconn);
+  if (!sampling)
+    numreq_threshold_gen = createGenerator(options.numreqperconn);
+  else
+    numreq_threshold_gen = createGenerator("0");
+  
   reset_numreq_threshold();
 }
 

@@ -562,9 +562,9 @@ int main(int argc, char **argv) {
     int max = atoi(max_ptr);
     int step = atoi(step_ptr);
 
-    printf("%-7s %7s %7s %7s %7s %7s %7s %7s %7s %8s %8s\n",
+    printf("%-7s %7s %7s %7s %7s %7s %7s %7s %7s %7s %8s %8s\n",
            "#type", "avg", "min", "1st", "5th", "10th",
-           "90th", "95th", "99th", "QPS", "target");
+           "50th", "90th", "95th", "99th", "QPS", "target");
 
     for (int q = min; q <= max; q += step) {
       args_to_options(&options);
