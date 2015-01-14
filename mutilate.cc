@@ -40,6 +40,8 @@
 
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
 
+#define CLOSE_AND_DIE(args...) do { for (auto s: agent_sockets) s->close(); DIE(args); } while (0)
+
 using namespace std;
 
 gengetopt_args_info args;
@@ -333,7 +335,7 @@ void sync_agent(zmq::socket_t* socket) {
     /* The real sync */
     for (auto s: agent_sockets)
       if (s_recv(*s).compare(string("sync")))
-        DIE("sync_agent[M]: out of sync [1]");
+        CLOSE_AND_DIE("sync_agent[M]: out of sync [1]");
     for (auto s: agent_sockets)
       s_send(*s, "proceed");
     /* End sync */
