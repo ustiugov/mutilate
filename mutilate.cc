@@ -832,6 +832,8 @@ struct agent_stats_thread_data {
   zmq::socket_t *socket;
 };
 
+volatile bool received_stop;
+
 void* agent_stats_thread(void *arg) {
   struct agent_stats_thread_data *data = (struct agent_stats_thread_data *) arg;
 
@@ -839,6 +841,7 @@ void* agent_stats_thread(void *arg) {
     string req = s_recv(*data->socket);
 
     if (!req.compare("stop")) {
+      received_stop = true;
       s_send(*data->socket, "ok");
       break;
     }
@@ -874,7 +877,7 @@ static bool report_stats_is_time(double now) {
   return now - report_stats_ctx.prv_time >= args.report_stats_arg;
 }
 
-static void report_stats(double now, int qps) {
+static ConnectionStats report_stats_get(double now, int qps) {
   ConnectionStats stats;
   for (Connection *conn: all_connections)
     stats.accumulate(conn->stats);
@@ -896,12 +899,17 @@ static void report_stats(double now, int qps) {
   ConnectionStats report_stats = stats;
   report_stats.substract(report_stats_ctx.prv_stats);
 
-  printf("%6.3f ", now - report_stats_ctx.start_time);
-  stats.print_stats("read", report_stats.get_sampler, false);
-  printf(" %8.1f", report_stats.get_qps());
-  printf(" %8d\n", qps);
   report_stats_ctx.prv_time = now;
   report_stats_ctx.prv_stats = stats;
+
+  return report_stats;
+}
+
+static void report_stats_print(double now, int qps, ConnectionStats &report_stats) {
+  printf("%6.3f ", now - report_stats_ctx.start_time);
+  report_stats.print_stats("read", report_stats.get_sampler, false);
+  printf(" %8.1f", report_stats.get_qps());
+  printf(" %8d\n", qps);
 }
 
 void do_mutilate(const vector<string>& servers, options_t& options,
@@ -1152,6 +1160,17 @@ void do_mutilate(const vector<string>& servers, options_t& options,
   if (!args.agentmode_given && args.report_stats_given)
     report_stats_init();
 
+  int stop_latency_n = 0, stop_latency_val = 0;
+  if (args.stop_latency_given) {
+    char *n_ptr = strtok(args.stop_latency_arg, ":");
+    char *x_ptr = strtok(NULL, ":");
+
+    if (n_ptr == NULL || x_ptr == NULL) DIE("Invalid --stop-latency argument");
+
+    stop_latency_n = atoi(n_ptr);
+    stop_latency_val = atoi(x_ptr);
+  }
+
   // Main event loop.
   while (1) {
     event_base_loop(base, loop_flag);
@@ -1181,8 +1200,14 @@ void do_mutilate(const vector<string>& servers, options_t& options,
         qps = options.qps;
         qps += args.measure_qps_given ? args.measure_qps_arg : 0;
       }
-      report_stats(now, qps);
+      ConnectionStats stats = report_stats_get(now, qps);
+      report_stats_print(now, qps, stats);
+      if (stop_latency_n && stats.get_nth(stop_latency_n) > stop_latency_val)
+        restart = false;
     }
+
+    if (args.agentmode_given && received_stop)
+      restart = false;
 
     if (restart) continue;
     else break;
