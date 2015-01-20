@@ -75,6 +75,10 @@ to the given function." string
 option "stop-latency" - "Stop scanning when N-order statistic > Xus.  \
 (i.e. --stop-latency 95:1000 means stop scanning when 95% of requests are \
 slower than 1000us)." string typestr="N:X"
+option "scan-search" - "Scan latency and search for the QPS. (i.e. \
+--scan-search 95:1000,20:10:100,500:50 means scan from 20KQPS to 100KQPS in
+10KQPS steps and then in 500KQPS steps while 95% of requests are faster than
+1000us, then go back one step, and do 50KPQS steps)." string
 
 text "\nAgent-mode options:"
 option "agentmode" A "Run client in agent mode."

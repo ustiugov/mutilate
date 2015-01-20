@@ -71,6 +71,7 @@ typedef struct {
   bool moderate;
 
   struct qps_function_info qps_function;
+  bool scan_search_enabled;
 } options_t;
 
 #endif // CONNECTIONOPTIONS_H

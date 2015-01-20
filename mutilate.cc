@@ -76,11 +76,34 @@ static struct {
   ConnectionStats prv_stats;
 } report_stats_ctx;
 
+static struct {
+  int n;
+  int val;
+  int start0;
+  int step0;
+  int stop0;
+  int step1;
+  int step2;
+} scan_search_params;
+
+static struct scan_search_ctx {
+  int step;
+  int qps;
+  int region;
+  int start2;
+  double start_time1;
+  double start_time2;
+} scans_ctx;
+
 struct agent_stats_msg {
   enum type {
     STATS,
     STOP,
+    SCAN_SEARCH_CTX,
   } type;
+  union {
+    struct scan_search_ctx scan_search_ctx;
+  };
 };
 
 void init_random_stuff();
@@ -308,6 +331,14 @@ static bool agent_stats_tx_stop(zmq::socket_t *s) {
   return s->send(zmsg);
 }
 
+static bool agent_stats_tx_scan_search_ctx(zmq::socket_t *s, struct scan_search_ctx *scan_search_ctx) {
+  zmq::message_t zmsg(sizeof(struct agent_stats_msg));
+  struct agent_stats_msg *msg = (struct agent_stats_msg *) zmsg.data();
+  msg->type = msg->SCAN_SEARCH_CTX;
+  msg->scan_search_ctx = *scan_search_ctx;
+  return s->send(zmsg);
+}
+
 void finish_agent(ConnectionStats &stats) {
   for (auto s: agent_sockets) {
     agent_stats_tx_stats(s);
@@ -504,6 +535,105 @@ void qps_function_adjust(options_t *options, vector<Connection*>& connections, i
   }
 }
 
+static bool scan_search_enabled(options_t *options) {
+  return options->scan_search_enabled;
+}
+
+static int scan_search_calc() {
+  return scans_ctx.qps;
+}
+
+static void scan_search_tx_ctx() {
+  for (auto s: agent_sockets) {
+    agent_stats_tx_scan_search_ctx(s, &scans_ctx);
+    assert(s_recv(*s) == "ok");
+  }
+}
+
+static void scan_search_rx_ctx(struct agent_stats_msg *msg) {
+  assert(msg->type == msg->SCAN_SEARCH_CTX);
+  scans_ctx = msg->scan_search_ctx;
+}
+
+static void scan_search_start() {
+  scans_ctx.qps = scan_search_params.start0;
+  scans_ctx.step = 1;
+  scan_search_tx_ctx();
+}
+
+static void scan_search_wait() {
+  while (scans_ctx.qps == 0)
+    usleep(5000);
+}
+
+static bool scan_search_update(ConnectionStats *stats) {
+  bool ret = true;
+
+  if (stats->get_nth(scan_search_params.n) > scan_search_params.val) {
+    switch (scans_ctx.region) {
+    case 0:
+      ret = false;
+      break;
+    case 1:
+      scans_ctx.start2 = max(scan_search_params.stop0, (int) (stats->get_qps() - 2 * scan_search_params.step1));
+      scans_ctx.qps = scans_ctx.start2;
+      scans_ctx.region++;
+      scans_ctx.step = 1;
+      ret = true;
+      break;
+    case 2:
+      ret = false;
+      break;
+    default:
+      assert(false);
+    }
+  } else {
+    switch (scans_ctx.region) {
+    case 0:
+      scans_ctx.qps = scan_search_params.start0 + scans_ctx.step * scan_search_params.step0;
+      scans_ctx.step++;
+      if (scans_ctx.qps >= scan_search_params.stop0) {
+        scans_ctx.qps = scan_search_params.stop0;
+        scans_ctx.region++;
+        scans_ctx.step = 1;
+      }
+      break;
+    case 1:
+      scans_ctx.qps = scan_search_params.stop0 + scans_ctx.step * scan_search_params.step1;
+      scans_ctx.step++;
+      break;
+    case 2:
+      scans_ctx.qps = scans_ctx.start2 + scans_ctx.step * scan_search_params.step2;
+      scans_ctx.step++;
+      break;
+    default:
+      assert(false);
+    }
+  }
+
+  if (ret)
+    scan_search_tx_ctx();
+
+  return ret;
+}
+
+static void scan_search_init(options_t *options) {
+  if (!args.scan_search_given)
+    return;
+  int ret = sscanf(args.scan_search_arg, "%d:%d,%d:%d:%d,%d:%d", &scan_search_params.n,
+                   &scan_search_params.val, &scan_search_params.start0, &scan_search_params.step0,
+                   &scan_search_params.stop0, &scan_search_params.step1, &scan_search_params.step2);
+  if (ret != 7)
+    DIE("Invalid --scan-search argument");
+  options->scan_search_enabled = true;
+  scan_search_params.start0 *= 1000;
+  scan_search_params.step0 *= 1000;
+  scan_search_params.stop0 *= 1000;
+  scan_search_params.step1 *= 1000;
+  scan_search_params.step2 *= 1000;
+  args.qps_arg = scan_search_params.start0;
+}
+
 int main(int argc, char **argv) {
   if (cmdline_parser(argc, argv, &args) != 0) exit(-1);
 
@@ -558,6 +688,7 @@ int main(int argc, char **argv) {
 
   options_t options;
   qps_function_init(&options);
+  scan_search_init(&options);
   args_to_options(&options);
 
   pthread_barrier_init(&barrier, NULL, options.threads);
@@ -869,6 +1000,12 @@ void* agent_stats_thread(void *arg) {
       received_stop = true;
       s_send(*data->socket, "ok");
       break;
+    }
+
+    if (msg->type == msg->SCAN_SEARCH_CTX) {
+      scan_search_rx_ctx(msg);
+      s_send(*data->socket, "ok");
+      continue;
     }
 
     assert(msg->type == msg->STATS);
@@ -1198,6 +1335,13 @@ void do_mutilate(const vector<string>& servers, options_t& options,
     stop_latency_val = atoi(x_ptr);
   }
 
+  if (scan_search_enabled(&options)) {
+    if (!args.agentmode_given)
+      scan_search_start();
+    else
+      scan_search_wait();
+  }
+
   // Main event loop.
   while (1) {
     event_base_loop(base, loop_flag);
@@ -1220,10 +1364,15 @@ void do_mutilate(const vector<string>& servers, options_t& options,
       qps = qps_function_calc(&options, now - start);
       if (!args.measure_qps_given)
         qps_function_adjust(&options, connections, qps - options.measure_qps);
+    } else if (scan_search_enabled(&options)) {
+      qps = scan_search_calc();
+      assert(qps != 0);
+      if (!args.measure_qps_given)
+        qps_function_adjust(&options, connections, qps - options.measure_qps);
     }
 
     if (!args.agentmode_given && args.report_stats_given && report_stats_is_time(now)) {
-      if (!qps_function_enabled(&options)) {
+      if (!qps_function_enabled(&options) && !scan_search_enabled(&options)) {
         qps = options.qps;
         qps += args.measure_qps_given ? args.measure_qps_arg : 0;
       }
@@ -1231,6 +1380,8 @@ void do_mutilate(const vector<string>& servers, options_t& options,
       report_stats_print(now, qps, stats);
       if (stop_latency_n && stats.get_nth(stop_latency_n) > stop_latency_val)
         restart = false;
+      else if (scan_search_enabled(&options))
+        restart = scan_search_update(&stats);
     }
 
     if (args.agentmode_given && received_stop)
