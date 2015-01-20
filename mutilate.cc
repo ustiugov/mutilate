@@ -76,6 +76,13 @@ static struct {
   ConnectionStats prv_stats;
 } report_stats_ctx;
 
+struct agent_stats_msg {
+  enum type {
+    STATS,
+    STOP,
+  } type;
+};
+
 void init_random_stuff();
 
 void go(const vector<string> &servers, options_t &options,
@@ -287,9 +294,23 @@ void prep_agent(const vector<string>& servers, options_t& options) {
   V("MASTER SLEEPS"); sleep_time(1.5);
 }
 
+static bool agent_stats_tx_stats(zmq::socket_t *s) {
+  zmq::message_t zmsg(sizeof(struct agent_stats_msg));
+  struct agent_stats_msg *msg = (struct agent_stats_msg *) zmsg.data();
+  msg->type = msg->STATS;
+  return s->send(zmsg);
+}
+
+static bool agent_stats_tx_stop(zmq::socket_t *s) {
+  zmq::message_t zmsg(sizeof(struct agent_stats_msg));
+  struct agent_stats_msg *msg = (struct agent_stats_msg *) zmsg.data();
+  msg->type = msg->STOP;
+  return s->send(zmsg);
+}
+
 void finish_agent(ConnectionStats &stats) {
   for (auto s: agent_sockets) {
-    s_send(*s, "stats");
+    agent_stats_tx_stats(s);
 
     AgentStats as;
     zmq::message_t message;
@@ -298,7 +319,7 @@ void finish_agent(ConnectionStats &stats) {
     memcpy(&as, message.data(), sizeof(as));
     stats.accumulate(as);
 
-    s_send(*s, "stop");
+    agent_stats_tx_stop(s);
     s_recv(*s);
   }
 }
@@ -836,15 +857,21 @@ volatile bool received_stop;
 
 void* agent_stats_thread(void *arg) {
   struct agent_stats_thread_data *data = (struct agent_stats_thread_data *) arg;
+  zmq::message_t zmsg;
+  struct agent_stats_msg *msg;
 
   while (1) {
-    string req = s_recv(*data->socket);
+    data->socket->recv(&zmsg);
+    assert(zmsg.size() == sizeof(struct agent_stats_msg));
+    msg = (struct agent_stats_msg *) zmsg.data();
 
-    if (!req.compare("stop")) {
+    if (msg->type == msg->STOP) {
       received_stop = true;
       s_send(*data->socket, "ok");
       break;
     }
+
+    assert(msg->type == msg->STATS);
 
     AgentStats as = {0};
 
@@ -883,7 +910,7 @@ static ConnectionStats report_stats_get(double now, int qps) {
     stats.accumulate(conn->stats);
 
   for (auto s: agent_sockets) {
-    s_send(*s, "stats");
+    agent_stats_tx_stats(s);
 
     AgentStats as;
     zmq::message_t message;
