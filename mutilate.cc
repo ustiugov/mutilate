@@ -618,6 +618,7 @@ static bool scan_search_update(ConnectionStats *stats) {
 }
 
 static void scan_search_init(options_t *options) {
+  options->scan_search_enabled = false;
   if (!args.scan_search_given)
     return;
   int ret = sscanf(args.scan_search_arg, "%d:%d,%d:%d:%d,%d:%d", &scan_search_params.n,
