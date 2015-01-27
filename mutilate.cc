@@ -487,12 +487,30 @@ static int qtriangle(struct qps_function_qtriangle *p, double t) {
   return (value - p->triangle.min) / p->step * p->step + p->triangle.min;
 }
 
+static int sin_noise(struct qps_function_sin_noise *p, double t) {
+	static unsigned short xsubi[3];
+	static double noise;
+	static double prv_noise_timestamp;
+
+	double offset = (double) (p->min + p->max) / 2;
+	double amplitude = p->max - offset;
+	double sin_value = amplitude * sin(t * 2 * M_PI / p->period) + offset;
+
+	if (t - prv_noise_timestamp >= p->noise_update_interval) {
+		noise = (erand48(xsubi) * 2 - 1) * p->noise_amplitude;
+		prv_noise_timestamp = t;
+	}
+	return sin_value + noise;
+}
+
 int qps_function_calc(options_t *options, double t) {
   switch (options->qps_function.type) {
   case TRIANGLE:
     return triangle(&options->qps_function.params.triangle, t);
   case QTRIANGLE:
     return qtriangle(&options->qps_function.params.qtriangle, t);
+  case SIN_NOISE:
+    return sin_noise(&options->qps_function.params.sin_noise, t);
   case NONE:
     assert(false);
   }
@@ -520,6 +538,12 @@ void qps_function_init(options_t *options) {
     options->qps_function.type = qps_function_type::QTRIANGLE;
     ret = sscanf(rest, "%d:%d:%lf:%d", &p->triangle.min, &p->triangle.max, &p->triangle.period, &p->step);
     if (ret != 4)
+      DIE("Invalid --qps-function argument");
+  } else if (!strcasecmp(type, "sin_noise")) {
+    struct qps_function_sin_noise *p = &options->qps_function.params.sin_noise;
+    options->qps_function.type = qps_function_type::SIN_NOISE;
+    ret = sscanf(rest, "%d:%d:%lf:%d:%lf", &p->min, &p->max, &p->period, &p->noise_amplitude, &p->noise_update_interval);
+    if (ret != 5)
       DIE("Invalid --qps-function argument");
   } else {
     DIE("Invalid --qps-function argument");

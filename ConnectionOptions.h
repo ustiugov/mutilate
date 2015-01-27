@@ -7,6 +7,7 @@ enum qps_function_type {
   NONE,
   TRIANGLE,
   QTRIANGLE,
+  SIN_NOISE,
 };
 
 struct qps_function_triangle {
@@ -20,11 +21,20 @@ struct qps_function_qtriangle {
   int step;
 };
 
+struct qps_function_sin_noise {
+  int min;
+  int max;
+  double period;
+  int noise_amplitude;
+  double noise_update_interval;
+};
+
 struct qps_function_info {
   enum qps_function_type type;
   union {
     struct qps_function_triangle triangle;
     struct qps_function_qtriangle qtriangle;
+    struct qps_function_sin_noise sin_noise;
   } params;
 };
 
