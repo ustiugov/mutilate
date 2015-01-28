@@ -72,6 +72,8 @@ option "report-stats" - "Report statistics every interval seconds. By default, \
 report at the end of the benchmark." float typestr="interval"
 option "qps-function" - "Adjust the target QPS during the benchmark according \
 to the given function." string
+option "qps-warmup" - "Warmup at rate QPS_function(t=0) for the given number \
+of seconds." int
 option "stop-latency" - "Stop scanning when N-order statistic > Xus.  \
 (i.e. --stop-latency 95:1000 means stop scanning when 95% of requests are \
 slower than 1000us)." string typestr="N:X"

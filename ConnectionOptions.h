@@ -31,6 +31,7 @@ struct qps_function_sin_noise {
 
 struct qps_function_info {
   enum qps_function_type type;
+  int warmup;
   union {
     struct qps_function_triangle triangle;
     struct qps_function_qtriangle qtriangle;

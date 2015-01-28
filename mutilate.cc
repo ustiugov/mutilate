@@ -504,6 +504,7 @@ static int sin_noise(struct qps_function_sin_noise *p, double t) {
 }
 
 int qps_function_calc(options_t *options, double t) {
+  t = max(0.0, t - options->qps_function.warmup);
   switch (options->qps_function.type) {
   case TRIANGLE:
     return triangle(&options->qps_function.params.triangle, t);
@@ -525,6 +526,8 @@ void qps_function_init(options_t *options) {
     options->qps_function.type = qps_function_type::NONE;
     return;
   }
+
+  options->qps_function.warmup = args.qps_warmup_arg;
 
   type = strtok_r(args.qps_function_arg, ":", &rest);
   if (!strcasecmp(type, "triangle")) {
