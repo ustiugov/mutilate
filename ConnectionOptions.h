@@ -14,6 +14,7 @@ struct qps_function_triangle {
   int min;
   int max;
   double period;
+  double max_hold;
 };
 
 struct qps_function_qtriangle {

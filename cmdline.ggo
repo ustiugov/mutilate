@@ -132,7 +132,7 @@ Parameters are not required.  The following distributions are supported:
 text "
 The following QPS functions are supported:
 
-   triangle:min:max:period                  Triangle wave.
+   triangle:min:max:period:maxhold          Triangle wave.
    qtriangle:min:max:period:step            Quantized triangle wave.
    sin_noise:min:max:period:namp:nupdate    Sine wave plus noise.
 "

@@ -476,10 +476,13 @@ bool qps_function_enabled(options_t *options) {
 
 static int triangle(struct qps_function_triangle *p, double t) {
   double t0 = fmod(t, p->period);
-  if (t0 < p->period / 2)
-    return p->min + t0 * (p->max - p->min) / (p->period / 2);
+  double t1 = (p->period - p->max_hold) / 2;
+  if (t0 < t1)
+    return p->min + t0 * (p->max - p->min) / t1;
+  else if (t0 < t1 + p->max_hold)
+    return p->max;
   else
-    return p->max - (t0 - p->period / 2) * (p->max - p->min) / (p->period / 2);
+    return p->max - (t0 - t1 - p->max_hold) * (p->max - p->min) / t1;
 }
 
 static int qtriangle(struct qps_function_qtriangle *p, double t) {
@@ -533,8 +536,8 @@ void qps_function_init(options_t *options) {
   if (!strcasecmp(type, "triangle")) {
     struct qps_function_triangle *p = &options->qps_function.params.triangle;
     options->qps_function.type = qps_function_type::TRIANGLE;
-    ret = sscanf(rest, "%d:%d:%lf", &p->min, &p->max, &p->period);
-    if (ret != 3)
+    ret = sscanf(rest, "%d:%d:%lf:%lf", &p->min, &p->max, &p->period, &p->max_hold);
+    if (ret != 4)
       DIE("Invalid --qps-function argument");
   } else if (!strcasecmp(type, "qtriangle")) {
     struct qps_function_qtriangle *p = &options->qps_function.params.qtriangle;
@@ -542,6 +545,7 @@ void qps_function_init(options_t *options) {
     ret = sscanf(rest, "%d:%d:%lf:%d", &p->triangle.min, &p->triangle.max, &p->triangle.period, &p->step);
     if (ret != 4)
       DIE("Invalid --qps-function argument");
+    p->triangle.max_hold = 0;
   } else if (!strcasecmp(type, "sin_noise")) {
     struct qps_function_sin_noise *p = &options->qps_function.params.sin_noise;
     options->qps_function.type = qps_function_type::SIN_NOISE;
