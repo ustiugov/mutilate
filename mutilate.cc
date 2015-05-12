@@ -64,6 +64,7 @@ struct thread_data {
 // struct evdns_base *evdns;
 
 pthread_barrier_t barrier;
+pthread_barrier_t finish_barrier;
 
 double boot_time;
 
@@ -245,6 +246,7 @@ void agent() {
 
     //    if (options.threads > 1)
       pthread_barrier_init(&barrier, NULL, options.threads);
+      pthread_barrier_init(&finish_barrier, NULL, options.threads + 1);
 
     ConnectionStats stats;
     all_connections.clear();
@@ -1039,6 +1041,7 @@ void* agent_stats_thread(void *arg) {
 
     if (msg->type == msg->STOP) {
       received_stop = true;
+      pthread_barrier_wait(&finish_barrier);
       s_send(*data->socket, "ok");
       break;
     }
@@ -1425,10 +1428,8 @@ void do_mutilate(const vector<string>& servers, options_t& options,
         restart = scan_search_update(&stats);
     }
 
-    if (args.agentmode_given && received_stop) {
-      received_stop = false;
+    if (args.agentmode_given && received_stop)
       restart = false;
-    }
 
     if (restart) continue;
     else break;
@@ -1436,10 +1437,6 @@ void do_mutilate(const vector<string>& servers, options_t& options,
 
   if (master && !args.scan_given && !args.search_given)
     V("stopped at %f  options.time = %d", get_time(), options.time);
-
-  if (args.agentmode_given && master)
-    if (pthread_join(stats_thread, NULL))
-      DIE("pthread_join() failed");
 
   // Tear-down and accumulate stats.
   for (Connection *conn: connections) {
@@ -1453,6 +1450,15 @@ void do_mutilate(const vector<string>& servers, options_t& options,
   event_config_free(config);
   evdns_base_free(evdns, 0);
   event_base_free(base);
+
+  if (args.agentmode_given && received_stop) {
+    pthread_barrier_wait(&finish_barrier);
+    received_stop = false;
+  }
+
+  if (args.agentmode_given && master)
+    if (pthread_join(stats_thread, NULL))
+      DIE("pthread_join() failed");
 }
 
 void args_to_options(options_t* options) {
