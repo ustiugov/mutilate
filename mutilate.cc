@@ -1419,7 +1419,7 @@ void do_mutilate(const vector<string>& servers, options_t& options,
       }
       ConnectionStats stats = report_stats_get(now, qps);
       report_stats_print(now, qps, stats);
-      if (stop_latency_n && stats.get_nth(stop_latency_n) > stop_latency_val)
+      if (now - start > options.qps_function.warmup_time && stop_latency_n && stats.get_nth(stop_latency_n) > stop_latency_val)
         restart = false;
       else if (scan_search_enabled(&options))
         restart = scan_search_update(&stats);
