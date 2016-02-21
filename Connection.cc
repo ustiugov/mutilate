@@ -24,8 +24,11 @@ Connection::Connection(struct event_base* _base, struct evdns_base* _evdns,
 {
   valuesize = createGenerator(options.valuesize);
   keysize = createGenerator(options.keysize);
+#ifdef USE_CUSTOM_PROTOCOL
+  customkeygen = new CustomKeyGenerator(keysize, valuesize);
+#else
   keygen = new KeyGenerator(keysize, options.records);
-
+#endif
   if (options.lambda <= 0) {
     iagen = createGenerator("0");
   } else {
@@ -62,8 +65,12 @@ Connection::~Connection() {
   deleteGenerator(numreq_threshold_gen);
 
   delete iagen;
-  delete keygen;
   delete keysize;
+#ifdef USE_CUSTOM_PROTOCOL
+  delete customkeygen;
+#else
+  delete keygen;
+#endif
   delete valuesize;
 }
 
@@ -182,7 +189,11 @@ void Connection::issue_set(const char* key, const char* value, int length,
 void Connection::issue_something(double now) {
   char key[256];
   // FIXME: generate key distribution here!
+#ifdef USE_CUSTOM_PROTOCOL
+  string keystr = customkeygen->generate();
+#else
   string keystr = keygen->generate(lrand48() % options.records);
+#endif
   strcpy(key, keystr.c_str());
   //  int key_index = lrand48() % options.records;
   //  generate_key(key_index, options.keysize, key);
@@ -548,7 +559,11 @@ void Connection::read_callback() {
           if (loader_issued >= options.records) break;
 
           char key[256];
-          string keystr = keygen->generate(loader_issued);
+#ifdef USE_CUSTOM_PROTOCOL
+          string keystr = customkeygen->generate();
+#else
+          string keystr = keygen->generate(lrand48() % options.records);
+#endif
           strcpy(key, keystr.c_str());
           int index = lrand48() % (1024 * 1024);
           //          generate_key(loader_issued, options.keysize, key);
@@ -649,7 +664,11 @@ void Connection::start_loading() {
 
     char key[256];
     int index = lrand48() % (1024 * 1024);
-    string keystr = keygen->generate(loader_issued);
+#ifdef USE_CUSTOM_PROTOCOL
+    string keystr = customkeygen->generate();
+#else
+    string keystr = keygen->generate(lrand48() % options.records);
+#endif
     strcpy(key, keystr.c_str());
           //    generate_key(loader_issued, options.keysize, key);
     //    issue_set(key, &random_char[index], options.valuesize);

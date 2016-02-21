@@ -208,6 +208,14 @@ private:
   double max;
 };
 
+class CustomKeyGenerator {
+public:
+  CustomKeyGenerator(Generator* t, Generator* r) : comp_time(t), val_size(r) {}
+  std::string generate() {return std::string("");}
+private:
+    Generator* comp_time;
+    Generator* val_size;
+};
 Generator* createFacebookKey();
 Generator* createFacebookValue();
 Generator* createFacebookIA();

@@ -102,11 +102,13 @@ private:
 
   // Parameters to track progress of the data loader.
   int loader_issued, loader_completed;
-
   Generator *valuesize;
   Generator *keysize;
+#ifdef USE_CUSTOM_PROTOCOL
+  CustomKeyGenerator *customkeygen;
+#else
   KeyGenerator *keygen;
-  
+#endif  
   // Tracks the number of requests made on the current socket
   // Used to implement the "numreqperconn" feature  
   Generator* numreq_threshold_gen;
