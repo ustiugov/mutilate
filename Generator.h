@@ -211,7 +211,14 @@ private:
 class CustomKeyGenerator {
 public:
   CustomKeyGenerator(Generator* t, Generator* r) : comp_time(t), val_size(r) {}
-  std::string generate() {return std::string("");}
+  std::string generate() {
+    int time = (int) comp_time->generate();
+    int  value = (int) val_size->generate();
+    char key[256];
+    snprintf(key, 256, "%d:%d", time, value);
+
+    return std::string(key);
+  }
 private:
     Generator* comp_time;
     Generator* val_size;
