@@ -1127,7 +1127,7 @@ void do_mutilate(const vector<string>& servers, options_t& options,
 #endif
 ) {
   int loop_flag =
-    (options.blocking || args.blocking_given) ? EVLOOP_ONCE : EVLOOP_NONBLOCK;
+    (options.blocking || args.blocking_given) ? EVLOOP_ONCE : EVLOOP_ONCE | EVLOOP_NONBLOCK;
 
   char *saveptr = NULL;  // For reentrant strtok().
 
