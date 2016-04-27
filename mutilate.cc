@@ -1428,8 +1428,8 @@ void do_mutilate(const vector<string>& servers, options_t& options,
         restart = scan_search_update(&stats);
     }
 
-    if (args.agentmode_given && received_stop)
-      restart = false;
+    if (args.agentmode_given)
+      restart = !received_stop;
 
     if (restart) continue;
     else break;
