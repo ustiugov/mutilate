@@ -24,6 +24,7 @@ Connection::Connection(struct event_base* _base, struct evdns_base* _evdns,
 {
   valuesize = createGenerator(options.valuesize);
   keysize = createGenerator(options.keysize);
+  getcount = createGenerator(options.getcount);
 #ifdef USE_CUSTOM_PROTOCOL
   customkeygen = new CustomKeyGenerator(keysize, valuesize);
 #else
@@ -102,7 +103,7 @@ void Connection::issue_sasl() {
 
 void Connection::issue_get(const char* key, double now) {
   Operation op;
-  int l;
+  int l, keycount, i;
   uint16_t keylen = strlen(key);
 
 #if HAVE_CLOCK_GETTIME
@@ -140,7 +141,15 @@ void Connection::issue_get(const char* key, double now) {
     bufferevent_write(bev, key, keylen);
     l = 24 + keylen;
   } else {
-    l = evbuffer_add_printf(bufferevent_get_output(bev), "get %s\r\n", key);
+    string reqval = string("get ");
+    reqval += string(key);
+    keycount = int(getcount->generate());
+    for (i=1;i<keycount;i++) {
+      reqval += string(" ");
+      reqval += keygen->generate(lrand48() % options.records);
+    }
+    reqval += "\r\n";
+    l = evbuffer_add_printf(bufferevent_get_output(bev), "%s", reqval.c_str());
   }
 
   if (read_state != LOADING) stats.tx_bytes += l;
@@ -503,6 +512,13 @@ void Connection::read_callback() {
         last_rx = now;
         pop_op();
         drive_write_machine(now);
+        break;
+      } else if (!strncmp(buf, "VALUE", 5)) {
+        sscanf(buf, "VALUE %*s %*d %d", &length);
+
+        data_length = length;
+        read_state = WAITING_FOR_GET_DATA;
+        free(buf);
         break;
       } else {
         DIE("Unexpected result when waiting for END");

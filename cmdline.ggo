@@ -20,6 +20,8 @@ option "keysize" K "Length of memcached keys (distribution)."
        string default="30"
 option "valuesize" V "Length of memcached values (distribution)."
        string default="200"
+option "getcount" G "Number of gets in multiget (distribution)."
+       string default="1"
 
 option "records" r "Number of memcached records to use.  \
 If multiple memcached servers are given, this number is divided \

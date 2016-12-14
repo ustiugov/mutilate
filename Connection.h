@@ -104,6 +104,7 @@ private:
   int loader_issued, loader_completed;
   Generator *valuesize;
   Generator *keysize;
+  Generator *getcount;
 #ifdef USE_CUSTOM_PROTOCOL
   CustomKeyGenerator *customkeygen;
 #else

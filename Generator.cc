@@ -39,7 +39,6 @@ Generator* createGenerator(std::string str) {
   char *s_copy = new char[str.length() + 1];
   strcpy(s_copy, str.c_str());
   char *saveptr = NULL;
-
   if (atoi(s_copy) != 0 || !strcmp(s_copy, "0")) {
     double v = atof(s_copy);
     delete[] s_copy;
@@ -69,7 +68,6 @@ Generator* createGenerator(std::string str) {
   else if (strcasestr(str.c_str(), "pareto")) return new GPareto(a1, a2, a3);
   else if (strcasestr(str.c_str(), "gev")) return new GEV(a1, a2, a3);
   else if (strcasestr(str.c_str(), "uniform")) return new Uniform(a1);
-
   DIE("Unable to create Generator '%s'", str.c_str());
 
   return NULL;

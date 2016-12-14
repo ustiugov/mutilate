@@ -57,6 +57,7 @@ typedef struct {
 
   char keysize[32];
   char valuesize[32];
+  char getcount[32];
   // int keysize;
   //  int valuesize;
   char ia[32];

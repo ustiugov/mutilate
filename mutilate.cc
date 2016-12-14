@@ -1514,6 +1514,7 @@ void args_to_options(options_t* options) {
   if (!options->records) options->records = 1;
   strncpy(options->keysize, args.keysize_arg, sizeof(options->keysize));
   strncpy(options->valuesize, args.valuesize_arg, sizeof(options->valuesize));
+  strncpy(options->getcount, args.getcount_arg, sizeof(options->getcount));
   strncpy(options->numreqperconn, args.numreqperconn_arg, sizeof(options->numreqperconn));
   options->update = args.update_arg;
   options->time = args.time_arg;

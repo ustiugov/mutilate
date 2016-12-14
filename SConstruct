@@ -42,7 +42,7 @@ env.Append(CFLAGS = ' -O3 -Wall -g')
 env.Append(CPPFLAGS = ' -O3 -Wall -g')
 #env.Append(CPPFLAGS  = ' -D_GNU_SOURCE -D__STDC_FORMAT_MACROS')
 #env.Append(CPPFLAGS = ' -DUSE_ADAPTIVE_SAMPLER')
-env.Append(CPPFLAGS = ' -DUSE_CUSTOM_PROTOCOL')
+#env.Append(CPPFLAGS = ' -DUSE_CUSTOM_PROTOCOL')
 
 env.Command(['cmdline.cc', 'cmdline.h'], 'cmdline.ggo', 'gengetopt < $SOURCE')
 

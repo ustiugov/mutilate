@@ -1,0 +1,454 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+ADAPTIVESAMPLER_H	AdaptiveSampler.h	4;"	d
+AGENTSTATS_H	AgentStats.h	3;"	d
+AdaptiveSampler	AdaptiveSampler.h	/^  AdaptiveSampler(int max) :$/;"	f	class:AdaptiveSampler
+AdaptiveSampler	AdaptiveSampler.h	/^template <class T> class AdaptiveSampler {$/;"	c
+AgentStats	AgentStats.h	/^class AgentStats {$/;"	c
+BARRIER_H	barrier.h	2;"	d
+BINARY_PROTOCOL_H	binary_protocol.h	2;"	d
+CLOSE_AND_DIE	mutilate.cc	43;"	d	file:
+CMD_GET	binary_protocol.h	4;"	d
+CMD_SASL	binary_protocol.h	6;"	d
+CMD_SET	binary_protocol.h	5;"	d
+CONNECTIONOPTIONS_H	ConnectionOptions.h	2;"	d
+CONNECTIONSTATS_H	ConnectionStats.h	3;"	d
+Connection	Connection.cc	/^Connection::Connection(struct event_base* _base, struct evdns_base* _evdns,$/;"	f	class:Connection
+Connection	Connection.h	/^class Connection {$/;"	c
+ConnectionStats	ConnectionStats.h	/^ ConnectionStats(bool _sampling = true) :$/;"	f	class:ConnectionStats
+ConnectionStats	ConnectionStats.h	/^class ConnectionStats {$/;"	c
+CustomKeyGenerator	Generator.h	/^  CustomKeyGenerator(Generator* t, Generator* r) : comp_time(t), val_size(r) {}$/;"	f	class:CustomKeyGenerator
+CustomKeyGenerator	Generator.h	/^class CustomKeyGenerator {$/;"	c
+D	log.h	11;"	d
+DEBUG	log.h	/^enum log_level_t { DEBUG, VERBOSE, INFO, WARN, QUIET };$/;"	e	enum:log_level_t
+DIE	log.h	16;"	d
+DISTRIBUTIONS_H	distributions.h	2;"	d
+Discrete	Generator.h	/^  Discrete(Generator* _def = NULL) : def(_def) {$/;"	f	class:Discrete
+Discrete	Generator.h	/^class Discrete : public Generator {$/;"	c
+EXPONENTIAL	distributions.h	/^enum distribution_t { UNIFORM, EXPONENTIAL, ZIPFIAN, LATEST };$/;"	e	enum:distribution_t
+Exponential	Generator.h	/^  Exponential(double _lambda = 1.0) : lambda(_lambda) {$/;"	f	class:Exponential
+Exponential	Generator.h	/^class Exponential : public Generator {$/;"	c
+FNV1_64_INIT	util.cc	14;"	d	file:
+FNV_64_PRIME	util.cc	13;"	d	file:
+Fixed	Generator.h	/^  Fixed(double _value = 1.0) : value(_value) { D("Fixed(%f)", value); }$/;"	f	class:Fixed
+Fixed	Generator.h	/^class Fixed : public Generator {$/;"	c
+GENERATOR_H	Generator.h	8;"	d
+GET	Operation.h	/^    GET, SET, SASL$/;"	e	enum:Operation::type_enum
+GEV	Generator.h	/^  GEV(double _loc = 0.0, double _scale = 1.0, double _shape = 1.0) :$/;"	f	class:GEV
+GEV	Generator.h	/^class GEV : public Generator {$/;"	c
+GPareto	Generator.h	/^  GPareto(double _loc = 0.0, double _scale = 1.0, double _shape = 1.0) :$/;"	f	class:GPareto
+GPareto	Generator.h	/^class GPareto : public Generator {$/;"	c
+Generator	Generator.h	/^  Generator() {}$/;"	f	class:Generator
+Generator	Generator.h	/^class Generator {$/;"	c
+HISTOGRAMSAMPLER_H	HistogramSampler.h	3;"	d
+HistogramSampler	HistogramSampler.h	/^  HistogramSampler(int _bins, int _width) : overflow_sum(0.0) {$/;"	f	class:HistogramSampler
+HistogramSampler	HistogramSampler.h	/^class HistogramSampler {$/;"	c
+I	log.h	13;"	d
+IDLE	Connection.h	/^    IDLE,$/;"	e	enum:Connection::read_state_enum
+INFO	log.h	/^enum log_level_t { DEBUG, VERBOSE, INFO, WARN, QUIET };$/;"	e	enum:log_level_t
+INIT_READ	Connection.h	/^    INIT_READ,$/;"	e	enum:Connection::read_state_enum
+INIT_WRITE	Connection.h	/^    INIT_WRITE,$/;"	e	enum:Connection::write_state_enum
+ISSUING	Connection.h	/^    ISSUING,$/;"	e	enum:Connection::write_state_enum
+KeyGenerator	Generator.h	/^  KeyGenerator(Generator* _g, double _max = 10000) : g(_g), max(_max) {}$/;"	f	class:KeyGenerator
+KeyGenerator	Generator.h	/^class KeyGenerator {$/;"	c
+L	log.h	9;"	d
+LATEST	distributions.h	/^enum distribution_t { UNIFORM, EXPONENTIAL, ZIPFIAN, LATEST };$/;"	e	enum:distribution_t
+LOADER_CHUNK	mutilate.h	12;"	d
+LOADING	Connection.h	/^    LOADING,$/;"	e	enum:Connection::read_state_enum
+LOGHISTOGRAMSAMPLER_H	LogHistogramSampler.h	3;"	d
+LOG_H	log.h	2;"	d
+LogHistogramSampler	LogHistogramSampler.h	/^  LogHistogramSampler(int _bins) : sum(0.0), sum_sq(0.0) {$/;"	f	class:LogHistogramSampler
+LogHistogramSampler	LogHistogramSampler.h	/^class LogHistogramSampler {$/;"	c
+MAX	Generator.h	10;"	d
+MAXIMUM_CONNECTIONS	mutilate.h	8;"	d
+MAX_READ_STATE	Connection.h	/^    MAX_READ_STATE,$/;"	e	enum:Connection::read_state_enum
+MAX_SAMPLES	mutilate.h	10;"	d
+MAX_WRITE_STATE	Connection.h	/^    MAX_WRITE_STATE,$/;"	e	enum:Connection::write_state_enum
+MIN	mutilate.cc	41;"	d	file:
+MINIMUM_KEY_LENGTH	mutilate.h	7;"	d
+MUTILATE_H	mutilate.h	2;"	d
+NOLOG	log.h	18;"	d
+NONE	ConnectionOptions.h	/^  NONE,$/;"	e	enum:qps_function_type
+Normal	Generator.h	/^  Normal(double _mean = 1.0, double _sd = 1.0) : mean(_mean), sd(_sd) {$/;"	f	class:Normal
+Normal	Generator.h	/^class Normal : public Generator {$/;"	c
+OPERATION_H	Operation.h	3;"	d
+Operation	Operation.h	/^class Operation {$/;"	c
+QTRIANGLE	ConnectionOptions.h	/^  QTRIANGLE,$/;"	e	enum:qps_function_type
+QUIET	log.h	/^enum log_level_t { DEBUG, VERBOSE, INFO, WARN, QUIET };$/;"	e	enum:log_level_t
+RESP_OK	binary_protocol.h	8;"	d
+RESP_SASL_ERR	binary_protocol.h	9;"	d
+SASL	Operation.h	/^    GET, SET, SASL$/;"	e	enum:Operation::type_enum
+SCAN_SEARCH_CTX	mutilate.cc	/^    SCAN_SEARCH_CTX,$/;"	e	enum:agent_stats_msg::type	file:
+SET	Operation.h	/^    GET, SET, SASL$/;"	e	enum:Operation::type_enum
+SIN_NOISE	ConnectionOptions.h	/^  SIN_NOISE,$/;"	e	enum:qps_function_type
+STATS	mutilate.cc	/^    STATS,$/;"	e	enum:agent_stats_msg::type	file:
+STOP	mutilate.cc	/^    STOP,$/;"	e	enum:agent_stats_msg::type	file:
+TRIANGLE	ConnectionOptions.h	/^  TRIANGLE,$/;"	e	enum:qps_function_type
+UNIFORM	distributions.h	/^enum distribution_t { UNIFORM, EXPONENTIAL, ZIPFIAN, LATEST };$/;"	e	enum:distribution_t
+USE_CACHED_TIME	mutilate.h	6;"	d
+UTIL_H	util.h	2;"	d
+Uniform	Generator.h	/^  Uniform(double _scale) : scale(_scale) { D("Uniform(%f)", scale); }$/;"	f	class:Uniform
+Uniform	Generator.h	/^class Uniform : public Generator {$/;"	c
+V	log.h	12;"	d
+VERBOSE	log.h	/^enum log_level_t { DEBUG, VERBOSE, INFO, WARN, QUIET };$/;"	e	enum:log_level_t
+W	log.h	14;"	d
+WAITING_FOR_END	Connection.h	/^    WAITING_FOR_END,$/;"	e	enum:Connection::read_state_enum
+WAITING_FOR_GET	Connection.h	/^    WAITING_FOR_GET,$/;"	e	enum:Connection::read_state_enum
+WAITING_FOR_GET_DATA	Connection.h	/^    WAITING_FOR_GET_DATA,$/;"	e	enum:Connection::read_state_enum
+WAITING_FOR_OPQ	Connection.h	/^    WAITING_FOR_OPQ,$/;"	e	enum:Connection::write_state_enum
+WAITING_FOR_SASL	Connection.h	/^    WAITING_FOR_SASL,$/;"	e	enum:Connection::read_state_enum
+WAITING_FOR_SET	Connection.h	/^    WAITING_FOR_SET,$/;"	e	enum:Connection::read_state_enum
+WAITING_FOR_TIME	Connection.h	/^    WAITING_FOR_TIME,$/;"	e	enum:Connection::write_state_enum
+WARN	log.h	/^enum log_level_t { DEBUG, VERBOSE, INFO, WARN, QUIET };$/;"	e	enum:log_level_t
+ZIPFIAN	distributions.h	/^enum distribution_t { UNIFORM, EXPONENTIAL, ZIPFIAN, LATEST };$/;"	e	enum:distribution_t
+_POW	LogHistogramSampler.h	14;"	d
+accumulate	ConnectionStats.h	/^  void accumulate(const AgentStats &as) {$/;"	f	class:ConnectionStats
+accumulate	ConnectionStats.h	/^  void accumulate(const ConnectionStats &cs) {$/;"	f	class:ConnectionStats
+accumulate	HistogramSampler.h	/^  void accumulate(const HistogramSampler &h) {$/;"	f	class:HistogramSampler
+accumulate	LogHistogramSampler.h	/^  void accumulate(const LogHistogramSampler &h) {$/;"	f	class:LogHistogramSampler
+add	Generator.h	/^  void add(double p, double v) {$/;"	f	class:Discrete
+agent	mutilate.cc	/^void agent() {$/;"	f
+agent_sockets	mutilate.cc	/^vector<zmq::socket_t*> agent_sockets;$/;"	v
+agent_stats_msg	mutilate.cc	/^struct agent_stats_msg {$/;"	s	file:
+agent_stats_thread	mutilate.cc	/^void* agent_stats_thread(void *arg) {$/;"	f
+agent_stats_thread_data	mutilate.cc	/^struct agent_stats_thread_data {$/;"	s	file:
+agent_stats_tx_scan_search_ctx	mutilate.cc	/^static bool agent_stats_tx_scan_search_ctx(zmq::socket_t *s, struct scan_search_ctx *scan_search_ctx) {$/;"	f	file:
+agent_stats_tx_stats	mutilate.cc	/^static bool agent_stats_tx_stats(zmq::socket_t *s) {$/;"	f	file:
+agent_stats_tx_stop	mutilate.cc	/^static bool agent_stats_tx_stop(zmq::socket_t *s) {$/;"	f	file:
+all_connections	mutilate.cc	/^vector<Connection*> all_connections;$/;"	v
+all_connections_mutex	mutilate.cc	/^pthread_mutex_t all_connections_mutex;$/;"	v
+args_to_options	mutilate.cc	/^void args_to_options(options_t* options) {$/;"	f
+average	AdaptiveSampler.h	/^  double average() {$/;"	f	class:AdaptiveSampler
+average	HistogramSampler.h	/^  double average() {$/;"	f	class:HistogramSampler
+average	LogHistogramSampler.h	/^  double average() {$/;"	f	class:LogHistogramSampler
+barrier	mutilate.cc	/^pthread_barrier_t barrier;$/;"	v
+barrier_destroy	barrier.cc	/^int barrier_destroy(barrier_t *barrier)$/;"	f
+barrier_init	barrier.cc	/^int barrier_init(barrier_t *barrier,int needed)$/;"	f
+barrier_t	barrier.h	/^} barrier_t;$/;"	t	typeref:struct:__anon8
+barrier_wait	barrier.cc	/^int barrier_wait(barrier_t *barrier)$/;"	f
+base	Connection.h	/^  struct event_base *base;$/;"	m	class:Connection	typeref:struct:Connection::event_base
+bev	Connection.h	/^  struct bufferevent *bev;$/;"	m	class:Connection	typeref:struct:Connection::bufferevent
+bev_event_cb	Connection.cc	/^void bev_event_cb(struct bufferevent *bev, short events, void *ptr) {$/;"	f
+bev_read_cb	Connection.cc	/^void bev_read_cb(struct bufferevent *bev, void *ptr) {$/;"	f
+bev_write_cb	Connection.cc	/^void bev_write_cb(struct bufferevent *bev, void *ptr) {$/;"	f
+binary	ConnectionOptions.h	/^  bool binary;$/;"	m	struct:__anon2
+binary_header_t	binary_protocol.h	/^} binary_header_t;$/;"	t	typeref:struct:__anon3
+bins	HistogramSampler.h	/^  std::vector<uint64_t> bins;$/;"	m	class:HistogramSampler
+bins	LogHistogramSampler.h	/^  std::vector<uint64_t> bins;$/;"	m	class:LogHistogramSampler
+blocking	ConnectionOptions.h	/^  bool blocking;$/;"	m	struct:__anon2
+body_len	binary_protocol.h	/^  uint32_t body_len;$/;"	m	struct:__anon3
+boot_time	mutilate.cc	/^double boot_time;$/;"	v
+called	barrier.h	/^    int called;$/;"	m	struct:__anon8
+check_exit_condition	Connection.cc	/^bool Connection::check_exit_condition(double now) {$/;"	f	class:Connection
+comp_time	Generator.h	/^    Generator* comp_time;$/;"	m	class:CustomKeyGenerator
+cond	barrier.h	/^    pthread_cond_t cond;$/;"	m	struct:__anon8
+connect_to_server	Connection.cc	/^bool Connection::connect_to_server() {$/;"	f	class:Connection
+connections	ConnectionOptions.h	/^  int connections;$/;"	m	struct:__anon2
+consume_binary_response	Connection.cc	/^bool Connection::consume_binary_response(evbuffer *input) {$/;"	f	class:Connection
+createFacebookIA	Generator.cc	/^Generator* createFacebookIA() { return new GPareto(0, 16.0292, 0.154971); }$/;"	f
+createFacebookKey	Generator.cc	/^Generator* createFacebookKey() { return new GEV(30.7984, 8.20449, 0.078688); }$/;"	f
+createFacebookValue	Generator.cc	/^Generator* createFacebookValue() {$/;"	f
+createGenerator	Generator.cc	/^Generator* createGenerator(std::string str) {$/;"	f
+customkeygen	Connection.h	/^  CustomKeyGenerator *customkeygen;$/;"	m	class:Connection
+data_length	Connection.h	/^  int data_length;  \/\/ When waiting for data, how much we're peeking for.$/;"	m	class:Connection
+data_type	binary_protocol.h	/^  uint8_t data_type;$/;"	m	struct:__anon3
+def	Generator.h	/^  Generator *def;$/;"	m	class:Discrete
+deleteGenerator	Generator.cc	/^void deleteGenerator(Generator* gen) {$/;"	f
+depth	ConnectionOptions.h	/^  int depth;$/;"	m	struct:__anon2
+disconnect_from_server	Connection.cc	/^bool Connection::disconnect_from_server() {$/;"	f	class:Connection
+distribution_t	distributions.h	/^enum distribution_t { UNIFORM, EXPONENTIAL, ZIPFIAN, LATEST };$/;"	g
+distributions	distributions.cc	/^const char* distributions[] =$/;"	v
+do_mutilate	mutilate.cc	/^void do_mutilate(const vector<string>& servers, options_t& options,$/;"	f
+double_to_tv	util.h	/^inline void double_to_tv(double val, struct timeval *tv) {$/;"	f
+drive_write_machine	Connection.cc	/^void Connection::drive_write_machine(double now) {$/;"	f	class:Connection
+e	Generator.h	/^  Exponential e;$/;"	m	class:GEV
+end_time	Operation.h	/^  double start_time, end_time;$/;"	m	class:Operation
+evdns	Connection.h	/^  struct evdns_base *evdns;$/;"	m	class:Connection	typeref:struct:Connection::evdns_base
+event_callback	Connection.cc	/^void Connection::event_callback(short events) {$/;"	f	class:Connection
+extra_len	binary_protocol.h	/^  uint8_t extra_len;$/;"	m	struct:__anon3
+extras	binary_protocol.h	/^  uint64_t extras;$/;"	m	struct:__anon3
+finish_agent	mutilate.cc	/^void finish_agent(ConnectionStats &stats) {$/;"	f
+finish_barrier	mutilate.cc	/^pthread_barrier_t finish_barrier;$/;"	v
+fnv_64	util.h	/^inline uint64_t fnv_64(uint64_t in) { return fnv_64_buf(&in, sizeof(in)); }$/;"	f
+fnv_64_buf	util.cc	/^uint64_t fnv_64_buf(const void* buf, size_t len) {$/;"	f
+g	Generator.h	/^  Generator* g;$/;"	m	class:KeyGenerator
+generate	Generator.h	/^  std::string generate() {$/;"	f	class:CustomKeyGenerator
+generate	Generator.h	/^  std::string generate(uint64_t ind) {$/;"	f	class:KeyGenerator
+generate	Generator.h	/^  virtual double generate(double U = -1.0) { return value; }$/;"	f	class:Fixed
+generate	Generator.h	/^  virtual double generate(double U = -1.0) {$/;"	f	class:Discrete
+generate	Generator.h	/^  virtual double generate(double U = -1.0) {$/;"	f	class:Exponential
+generate	Generator.h	/^  virtual double generate(double U = -1.0) {$/;"	f	class:GEV
+generate	Generator.h	/^  virtual double generate(double U = -1.0) {$/;"	f	class:GPareto
+generate	Generator.h	/^  virtual double generate(double U = -1.0) {$/;"	f	class:Normal
+generate	Generator.h	/^  virtual double generate(double U = -1.0) {$/;"	f	class:Uniform
+generate_key	util.cc	/^void generate_key(int n, int length, char *buf) {$/;"	f
+generate_normal	distributions.cc	/^double generate_normal(double mean, double sd) {$/;"	f
+generate_poisson	distributions.cc	/^double generate_poisson(double lambda) {$/;"	f
+generate_uniform	distributions.cc	/^double generate_uniform(double lambda) {$/;"	f
+get_distribution	distributions.cc	/^distribution_t get_distribution(const char *name) {$/;"	f
+get_misses	AgentStats.h	/^  uint64_t gets, sets, get_misses;$/;"	m	class:AgentStats
+get_misses	ConnectionStats.h	/^  uint64_t gets, sets, get_misses;$/;"	m	class:ConnectionStats
+get_nth	ConnectionStats.h	/^  double get_nth(double nth) {$/;"	f	class:ConnectionStats
+get_nth	HistogramSampler.h	/^  double get_nth(double nth) {$/;"	f	class:HistogramSampler
+get_nth	LogHistogramSampler.h	/^  double get_nth(double nth) {$/;"	f	class:LogHistogramSampler
+get_qps	ConnectionStats.h	/^  double get_qps() {$/;"	f	class:ConnectionStats
+get_sampler	ConnectionStats.h	/^  AdaptiveSampler<Operation> get_sampler;$/;"	m	class:ConnectionStats
+get_sampler	ConnectionStats.h	/^  HistogramSampler get_sampler;$/;"	m	class:ConnectionStats
+get_sampler	ConnectionStats.h	/^  LogHistogramSampler get_sampler;$/;"	m	class:ConnectionStats
+get_time	util.h	/^inline double get_time() {$/;"	f
+get_time_accurate	util.h	/^inline double get_time_accurate() {$/;"	f
+getcount	Connection.h	/^  Generator *getcount;$/;"	m	class:Connection
+gets	AgentStats.h	/^  uint64_t gets, sets, get_misses;$/;"	m	class:AgentStats
+gets	ConnectionStats.h	/^  uint64_t gets, sets, get_misses;$/;"	m	class:ConnectionStats
+go	mutilate.cc	/^void go(const vector<string>& servers, options_t& options,$/;"	f
+hostname	Connection.h	/^  string hostname;$/;"	m	class:Connection
+ia	ConnectionOptions.h	/^  char ia[32];$/;"	m	struct:__anon2
+iadist	ConnectionOptions.h	/^  enum distribution_t iadist;$/;"	m	struct:__anon2	typeref:enum:__anon2::distribution_t
+iagen	Connection.h	/^  Generator *iagen;$/;"	m	class:Connection
+init_random_stuff	mutilate.cc	/^void init_random_stuff() {$/;"	f
+is_connected_to_server	Connection.cc	/^bool Connection::is_connected_to_server() {$/;"	f	class:Connection
+issue_get	Connection.cc	/^void Connection::issue_get(const char* key, double now) {$/;"	f	class:Connection
+issue_sasl	Connection.cc	/^void Connection::issue_sasl() {$/;"	f	class:Connection
+issue_set	Connection.cc	/^void Connection::issue_set(const char* key, const char* value, int length,$/;"	f	class:Connection
+issue_something	Connection.cc	/^void Connection::issue_something(double now) {$/;"	f	class:Connection
+key	Operation.h	/^  string key;$/;"	m	class:Operation
+key_len	binary_protocol.h	/^  uint16_t key_len;$/;"	m	struct:__anon3
+keygen	Connection.h	/^  KeyGenerator *keygen;$/;"	m	class:Connection
+keysize	Connection.h	/^  Generator *keysize;$/;"	m	class:Connection
+keysize	ConnectionOptions.h	/^  char keysize[32];$/;"	m	struct:__anon2
+lambda	ConnectionOptions.h	/^  double lambda;$/;"	m	struct:__anon2
+lambda	Generator.h	/^  double lambda;$/;"	m	class:Exponential
+lambda_denom	ConnectionOptions.h	/^  int lambda_denom;$/;"	m	struct:__anon2
+last_rx	Connection.h	/^  double last_rx; \/\/ Used to moderate transmission rate.$/;"	m	class:Connection
+last_tx	Connection.h	/^  double last_tx;$/;"	m	class:Connection
+loader_completed	Connection.h	/^  int loader_issued, loader_completed;$/;"	m	class:Connection
+loader_issued	Connection.h	/^  int loader_issued, loader_completed;$/;"	m	class:Connection
+loadonly	ConnectionOptions.h	/^  bool loadonly;$/;"	m	struct:__anon2
+loc	Generator.h	/^  double loc \/* mu *\/, scale \/* sigma *\/, shape \/* k *\/;$/;"	m	class:GEV
+loc	Generator.h	/^  double loc \/* mu *\/;$/;"	m	class:GPareto
+log_file_line	log.cc	/^void log_file_line(log_level_t level, const char *file, int line,$/;"	f
+log_get	ConnectionStats.h	/^  void log_get(Operation& op) { if (sampling) get_sampler.sample(op); gets++; }$/;"	f	class:ConnectionStats
+log_level	log.cc	/^log_level_t log_level = INFO;$/;"	v
+log_level_t	log.h	/^enum log_level_t { DEBUG, VERBOSE, INFO, WARN, QUIET };$/;"	g
+log_op	ConnectionStats.h	/^  void log_op (double op)     { if (sampling)  op_sampler.sample(op); }$/;"	f	class:ConnectionStats
+log_set	ConnectionStats.h	/^  void log_set(Operation& op) { if (sampling) set_sampler.sample(op); sets++; }$/;"	f	class:ConnectionStats
+magic	binary_protocol.h	/^  uint8_t magic;$/;"	m	struct:__anon3
+main	TestGenerator.cc	/^int main(int argc, char **argv) {$/;"	f
+main	mutilate.cc	/^int main(int argc, char **argv) {$/;"	f
+master	mutilate.cc	/^  bool master;  \/\/ Thread #0, not to be confused with agent master.$/;"	m	struct:thread_data	file:
+max	ConnectionOptions.h	/^  int max;$/;"	m	struct:qps_function_sin_noise
+max	ConnectionOptions.h	/^  int max;$/;"	m	struct:qps_function_triangle
+max	Generator.h	/^  double max;$/;"	m	class:KeyGenerator
+max_hold	ConnectionOptions.h	/^  double max_hold;$/;"	m	struct:qps_function_triangle
+max_samples	AdaptiveSampler.h	/^  unsigned int max_samples;$/;"	m	class:AdaptiveSampler
+mean	Generator.h	/^  double mean, sd;$/;"	m	class:Normal
+measure_qps	ConnectionOptions.h	/^  int measure_qps;$/;"	m	struct:__anon2
+min	ConnectionOptions.h	/^  int min;$/;"	m	struct:qps_function_sin_noise
+min	ConnectionOptions.h	/^  int min;$/;"	m	struct:qps_function_triangle
+minimum	LogHistogramSampler.h	/^  double minimum() {$/;"	f	class:LogHistogramSampler
+moderate	ConnectionOptions.h	/^  bool moderate;$/;"	m	struct:__anon2
+mutex	barrier.h	/^    pthread_mutex_t mutex;$/;"	m	struct:__anon8
+n	mutilate.cc	/^  int n;$/;"	m	struct:__anon6	file:
+name_to_ipaddr	mutilate.cc	/^string name_to_ipaddr(string host) {$/;"	f
+needed	barrier.h	/^    int needed;$/;"	m	struct:__anon8
+next_time	Connection.h	/^  double next_time; \/\/ Inter-transmission time parameters.$/;"	m	class:Connection
+no_nodelay	ConnectionOptions.h	/^  bool no_nodelay;$/;"	m	struct:__anon2
+noise_amplitude	ConnectionOptions.h	/^  int noise_amplitude;$/;"	m	struct:qps_function_sin_noise
+noise_update_interval	ConnectionOptions.h	/^  double noise_update_interval;$/;"	m	struct:qps_function_sin_noise
+noload	ConnectionOptions.h	/^  bool noload;$/;"	m	struct:__anon2
+numreq_count	Connection.h	/^  unsigned long numreq_count;$/;"	m	class:Connection
+numreq_threshold	Connection.h	/^  unsigned long numreq_threshold;$/;"	m	class:Connection
+numreq_threshold_gen	Connection.h	/^  Generator* numreq_threshold_gen;$/;"	m	class:Connection
+numreqperconn	ConnectionOptions.h	/^  char numreqperconn[32];$/;"	m	struct:__anon2
+oob_thread	ConnectionOptions.h	/^  bool oob_thread;$/;"	m	struct:__anon2
+op_queue	Connection.h	/^  std::queue<Operation> op_queue;$/;"	m	class:Connection
+op_sampler	ConnectionStats.h	/^  AdaptiveSampler<double> op_sampler;$/;"	m	class:ConnectionStats
+op_sampler	ConnectionStats.h	/^  HistogramSampler op_sampler;$/;"	m	class:ConnectionStats
+op_sampler	ConnectionStats.h	/^  LogHistogramSampler op_sampler;$/;"	m	class:ConnectionStats
+opaque	binary_protocol.h	/^  uint32_t opaque;$/;"	m	struct:__anon3
+opcode	binary_protocol.h	/^  uint8_t opcode;$/;"	m	struct:__anon3
+options	Connection.h	/^  options_t options;$/;"	m	class:Connection
+options	mutilate.cc	/^  options_t *options;$/;"	m	struct:thread_data	file:
+options_t	ConnectionOptions.h	/^} options_t;$/;"	t	typeref:struct:__anon2
+overflow_sum	HistogramSampler.h	/^  double overflow_sum;$/;"	m	class:HistogramSampler
+params	ConnectionOptions.h	/^  } params;$/;"	m	struct:qps_function_info	typeref:union:qps_function_info::__anon1
+password	ConnectionOptions.h	/^  char password[32];$/;"	m	struct:__anon2
+period	ConnectionOptions.h	/^  double period;$/;"	m	struct:qps_function_sin_noise
+period	ConnectionOptions.h	/^  double period;$/;"	m	struct:qps_function_triangle
+pop_op	Connection.cc	/^void Connection::pop_op() {$/;"	f	class:Connection
+port	Connection.h	/^  string port;$/;"	m	class:Connection
+prep_agent	mutilate.cc	/^void prep_agent(const vector<string>& servers, options_t& options) {$/;"	f
+print_header	AdaptiveSampler.h	/^  void print_header() {$/;"	f	class:AdaptiveSampler
+print_header	ConnectionStats.h	/^  static void print_header() {$/;"	f	class:ConnectionStats
+print_stats	AdaptiveSampler.h	/^  void print_stats(const char *type, const char *size) {$/;"	f	class:AdaptiveSampler
+print_stats	ConnectionStats.h	/^  void print_stats(const char *tag, AdaptiveSampler<Operation> &sampler,$/;"	f	class:ConnectionStats
+print_stats	ConnectionStats.h	/^  void print_stats(const char *tag, AdaptiveSampler<double> &sampler,$/;"	f	class:ConnectionStats
+print_stats	ConnectionStats.h	/^  void print_stats(const char *tag, HistogramSampler &sampler,$/;"	f	class:ConnectionStats
+print_stats	ConnectionStats.h	/^  void print_stats(const char *tag, LogHistogramSampler &sampler,$/;"	f	class:ConnectionStats
+prv_stats	mutilate.cc	/^  ConnectionStats prv_stats;$/;"	m	struct:__anon5	file:
+prv_time	mutilate.cc	/^  double prv_time;$/;"	m	struct:__anon5	file:
+pthread_barrier_attr_t	barrier.h	19;"	d
+pthread_barrier_destroy	barrier.h	21;"	d
+pthread_barrier_init	barrier.h	20;"	d
+pthread_barrier_t	barrier.h	18;"	d
+pthread_barrier_wait	barrier.h	22;"	d
+pv	Generator.h	/^  std::vector< std::pair<double,double> > pv;$/;"	m	class:Discrete
+qps	ConnectionOptions.h	/^  int qps;$/;"	m	struct:__anon2
+qps	mutilate.cc	/^  int qps;$/;"	m	struct:scan_search_ctx	file:
+qps_function	ConnectionOptions.h	/^  struct qps_function_info qps_function;$/;"	m	struct:__anon2	typeref:struct:__anon2::qps_function_info
+qps_function_adjust	mutilate.cc	/^void qps_function_adjust(options_t *options, vector<Connection*>& connections, int qps) {$/;"	f
+qps_function_calc	mutilate.cc	/^int qps_function_calc(options_t *options, double t) {$/;"	f
+qps_function_enabled	mutilate.cc	/^bool qps_function_enabled(options_t *options) {$/;"	f
+qps_function_info	ConnectionOptions.h	/^struct qps_function_info {$/;"	s
+qps_function_init	mutilate.cc	/^void qps_function_init(options_t *options) {$/;"	f
+qps_function_qtriangle	ConnectionOptions.h	/^struct qps_function_qtriangle {$/;"	s
+qps_function_sin_noise	ConnectionOptions.h	/^struct qps_function_sin_noise {$/;"	s
+qps_function_triangle	ConnectionOptions.h	/^struct qps_function_triangle {$/;"	s
+qps_function_type	ConnectionOptions.h	/^enum qps_function_type {$/;"	g
+qtriangle	ConnectionOptions.h	/^    struct qps_function_qtriangle qtriangle;$/;"	m	union:qps_function_info::__anon1	typeref:struct:qps_function_info::__anon1::qps_function_qtriangle
+qtriangle	mutilate.cc	/^static int qtriangle(struct qps_function_qtriangle *p, double t) {$/;"	f	file:
+random_char	mutilate.cc	/^char random_char[2 * 1024 * 1024];  \/\/ Buffer used to generate random values.$/;"	v
+read_callback	Connection.cc	/^void Connection::read_callback() {$/;"	f	class:Connection
+read_state	Connection.h	/^  read_state_enum read_state;$/;"	m	class:Connection
+read_state_enum	Connection.h	/^  enum read_state_enum {$/;"	g	class:Connection
+received_stop	mutilate.cc	/^volatile bool received_stop;$/;"	v
+records	ConnectionOptions.h	/^  int records;$/;"	m	struct:__anon2
+region	mutilate.cc	/^  int region;$/;"	m	struct:scan_search_ctx	file:
+report_stats_ctx	mutilate.cc	/^} report_stats_ctx;$/;"	v	typeref:struct:__anon5	file:
+report_stats_get	mutilate.cc	/^static ConnectionStats report_stats_get(double now, int qps) {$/;"	f	file:
+report_stats_init	mutilate.cc	/^static void report_stats_init(void) {$/;"	f	file:
+report_stats_is_time	mutilate.cc	/^static bool report_stats_is_time(double now) {$/;"	f	file:
+report_stats_print	mutilate.cc	/^static void report_stats_print(double now, int qps, ConnectionStats &report_stats) {$/;"	f	file:
+reset	Connection.cc	/^void Connection::reset() {$/;"	f	class:Connection
+reset_connection	Connection.cc	/^bool Connection::reset_connection() {$/;"	f	class:Connection
+reset_numreq_threshold	Connection.cc	/^void Connection::reset_numreq_threshold() {$/;"	f	class:Connection
+roundrobin	ConnectionOptions.h	/^  bool roundrobin;$/;"	m	struct:__anon2
+rx_bytes	AgentStats.h	/^  uint64_t rx_bytes, tx_bytes;$/;"	m	class:AgentStats
+rx_bytes	ConnectionStats.h	/^  uint64_t rx_bytes, tx_bytes;$/;"	m	class:ConnectionStats
+s_recv	mutilate.cc	/^static std::string s_recv (zmq::socket_t &socket) {$/;"	f	file:
+s_send	mutilate.cc	/^static bool s_send (zmq::socket_t &socket, const std::string &string) {$/;"	f	file:
+sample	AdaptiveSampler.h	/^  void sample(T s) {$/;"	f	class:AdaptiveSampler
+sample	HistogramSampler.h	/^  void sample(const Operation &op) {$/;"	f	class:HistogramSampler
+sample	HistogramSampler.h	/^  void sample(double s) {$/;"	f	class:HistogramSampler
+sample	LogHistogramSampler.h	/^  void sample(const Operation &op) {$/;"	f	class:LogHistogramSampler
+sample	LogHistogramSampler.h	/^  void sample(double s) {$/;"	f	class:LogHistogramSampler
+sample_rate	AdaptiveSampler.h	/^  unsigned int sample_rate;$/;"	m	class:AdaptiveSampler
+samples	AdaptiveSampler.h	/^  std::vector<T> samples;$/;"	m	class:AdaptiveSampler
+samples	LogHistogramSampler.h	/^  std::vector<Operation> samples;$/;"	m	class:LogHistogramSampler
+sampling	ConnectionStats.h	/^  bool sampling;$/;"	m	class:ConnectionStats
+sasl	ConnectionOptions.h	/^  bool sasl;$/;"	m	struct:__anon2
+save_samples	AdaptiveSampler.h	/^  void save_samples(const char* type, const char* filename) {$/;"	f	class:AdaptiveSampler
+scale	Generator.h	/^  double loc \/* mu *\/, scale \/* sigma *\/, shape \/* k *\/;$/;"	m	class:GEV
+scale	Generator.h	/^  double scale \/* sigma *\/, shape \/* k *\/;$/;"	m	class:GPareto
+scale	Generator.h	/^  double scale;$/;"	m	class:Uniform
+scan_search_calc	mutilate.cc	/^static int scan_search_calc() {$/;"	f	file:
+scan_search_ctx	mutilate.cc	/^    struct scan_search_ctx scan_search_ctx;$/;"	m	union:agent_stats_msg::__anon7	typeref:struct:agent_stats_msg::__anon7::scan_search_ctx	file:
+scan_search_ctx	mutilate.cc	/^static struct scan_search_ctx {$/;"	s	file:
+scan_search_enabled	ConnectionOptions.h	/^  bool scan_search_enabled;$/;"	m	struct:__anon2
+scan_search_enabled	mutilate.cc	/^static bool scan_search_enabled(options_t *options) {$/;"	f	file:
+scan_search_init	mutilate.cc	/^static void scan_search_init(options_t *options) {$/;"	f	file:
+scan_search_params	mutilate.cc	/^} scan_search_params;$/;"	v	typeref:struct:__anon6	file:
+scan_search_rx_ctx	mutilate.cc	/^static void scan_search_rx_ctx(struct agent_stats_msg *msg) {$/;"	f	file:
+scan_search_start	mutilate.cc	/^static void scan_search_start() {$/;"	f	file:
+scan_search_tx_ctx	mutilate.cc	/^static void scan_search_tx_ctx() {$/;"	f	file:
+scan_search_update	mutilate.cc	/^static bool scan_search_update(ConnectionStats *stats) {$/;"	f	file:
+scan_search_wait	mutilate.cc	/^static void scan_search_wait() {$/;"	f	file:
+scans_ctx	mutilate.cc	/^} scans_ctx;$/;"	v	typeref:struct:scan_search_ctx	file:
+sd	Generator.h	/^  double mean, sd;$/;"	m	class:Normal
+server_given	ConnectionOptions.h	/^  int server_given;$/;"	m	struct:__anon2
+servers	mutilate.cc	/^  const vector<string> *servers;$/;"	m	struct:thread_data	file:
+set_lambda	Generator.h	/^  virtual void set_lambda(double lambda) { this->lambda = lambda; }$/;"	f	class:Exponential
+set_lambda	Generator.h	/^  virtual void set_lambda(double lambda) {$/;"	f	class:Fixed
+set_lambda	Generator.h	/^  virtual void set_lambda(double lambda) {$/;"	f	class:GPareto
+set_lambda	Generator.h	/^  virtual void set_lambda(double lambda) {$/;"	f	class:Normal
+set_lambda	Generator.h	/^  virtual void set_lambda(double lambda) {$/;"	f	class:Uniform
+set_lambda	Generator.h	/^  virtual void set_lambda(double lambda) {DIE("set_lambda() not implemented");}$/;"	f	class:Generator
+set_priority	Connection.cc	/^void Connection::set_priority(int pri) {$/;"	f	class:Connection
+set_sampler	ConnectionStats.h	/^  AdaptiveSampler<Operation> set_sampler;$/;"	m	class:ConnectionStats
+set_sampler	ConnectionStats.h	/^  HistogramSampler set_sampler;$/;"	m	class:ConnectionStats
+set_sampler	ConnectionStats.h	/^  LogHistogramSampler set_sampler;$/;"	m	class:ConnectionStats
+sets	AgentStats.h	/^  uint64_t gets, sets, get_misses;$/;"	m	class:AgentStats
+sets	ConnectionStats.h	/^  uint64_t gets, sets, get_misses;$/;"	m	class:ConnectionStats
+shape	Generator.h	/^  double loc \/* mu *\/, scale \/* sigma *\/, shape \/* k *\/;$/;"	m	class:GEV
+shape	Generator.h	/^  double scale \/* sigma *\/, shape \/* k *\/;$/;"	m	class:GPareto
+sin_noise	ConnectionOptions.h	/^    struct qps_function_sin_noise sin_noise;$/;"	m	union:qps_function_info::__anon1	typeref:struct:qps_function_info::__anon1::qps_function_sin_noise
+sin_noise	mutilate.cc	/^static int sin_noise(struct qps_function_sin_noise *p, double t) {$/;"	f	file:
+skip	ConnectionOptions.h	/^  bool skip;$/;"	m	struct:__anon2
+skips	AgentStats.h	/^  uint64_t skips;$/;"	m	class:AgentStats
+skips	ConnectionStats.h	/^  uint64_t skips;$/;"	m	class:ConnectionStats
+sleep_time	util.cc	/^void sleep_time(double duration) {$/;"	f
+socket	mutilate.cc	/^  zmq::socket_t *socket;$/;"	m	struct:agent_stats_thread_data	file:
+socket	mutilate.cc	/^  zmq::socket_t *socket;$/;"	m	struct:thread_data	file:
+start	AgentStats.h	/^  double start, stop;$/;"	m	class:AgentStats
+start	ConnectionStats.h	/^  double start, stop;$/;"	m	class:ConnectionStats
+start0	mutilate.cc	/^  int start0;$/;"	m	struct:__anon6	file:
+start2	mutilate.cc	/^  int start2;$/;"	m	struct:scan_search_ctx	file:
+start_loading	Connection.cc	/^void Connection::start_loading() {$/;"	f	class:Connection
+start_time	Connection.h	/^  double start_time;  \/\/ Time when this connection began operations.$/;"	m	class:Connection
+start_time	Operation.h	/^  double start_time, end_time;$/;"	m	class:Operation
+start_time	mutilate.cc	/^  double start_time;$/;"	m	struct:__anon5	file:
+start_time1	mutilate.cc	/^  double start_time1;$/;"	m	struct:scan_search_ctx	file:
+start_time2	mutilate.cc	/^  double start_time2;$/;"	m	struct:scan_search_ctx	file:
+stats	Connection.h	/^  ConnectionStats stats;$/;"	m	class:Connection
+status	binary_protocol.h	/^   uint16_t status;  \/\/ response use$/;"	m	union:__anon3::__anon4
+stddev	LogHistogramSampler.h	/^  double stddev() {$/;"	f	class:LogHistogramSampler
+step	ConnectionOptions.h	/^  int step;$/;"	m	struct:qps_function_qtriangle
+step	mutilate.cc	/^  int step;$/;"	m	struct:scan_search_ctx	file:
+step0	mutilate.cc	/^  int step0;$/;"	m	struct:__anon6	file:
+step1	mutilate.cc	/^  int step1;$/;"	m	struct:__anon6	file:
+step2	mutilate.cc	/^  int step2;$/;"	m	struct:__anon6	file:
+stop	AgentStats.h	/^  double start, stop;$/;"	m	class:AgentStats
+stop	ConnectionStats.h	/^  double start, stop;$/;"	m	class:ConnectionStats
+stop0	mutilate.cc	/^  int stop0;$/;"	m	struct:__anon6	file:
+substract	ConnectionStats.h	/^  void substract(const ConnectionStats &cs) {$/;"	f	class:ConnectionStats
+substract	LogHistogramSampler.h	/^  void substract(const LogHistogramSampler &h) {$/;"	f	class:LogHistogramSampler
+sum	LogHistogramSampler.h	/^  double sum;$/;"	m	class:LogHistogramSampler
+sum_sq	LogHistogramSampler.h	/^  double sum_sq;$/;"	m	class:LogHistogramSampler
+sync_agent	mutilate.cc	/^void sync_agent(zmq::socket_t* socket) {$/;"	f
+thread_data	mutilate.cc	/^struct thread_data {$/;"	s	file:
+thread_main	mutilate.cc	/^void* thread_main(void *arg) {$/;"	f
+threads	ConnectionOptions.h	/^  int threads;$/;"	m	struct:__anon2
+time	ConnectionOptions.h	/^  int time;$/;"	m	struct:__anon2
+time	Operation.h	/^  double time() const { return (end_time - start_time) * 1000000; }$/;"	f	class:Operation
+timer	Connection.h	/^  struct event *timer;  \/\/ Used to control inter-transmission time.$/;"	m	class:Connection	typeref:struct:Connection::event
+timer_callback	Connection.cc	/^void Connection::timer_callback() { drive_write_machine(); }$/;"	f	class:Connection
+timer_cb	Connection.cc	/^void timer_cb(evutil_socket_t fd, short what, void *ptr) {$/;"	f
+total	HistogramSampler.h	/^  uint64_t total() {$/;"	f	class:HistogramSampler
+total	LogHistogramSampler.h	/^  uint64_t total() {$/;"	f	class:LogHistogramSampler
+total_samples	AdaptiveSampler.h	/^  unsigned int total_samples;$/;"	m	class:AdaptiveSampler
+triangle	ConnectionOptions.h	/^    struct qps_function_triangle triangle;$/;"	m	union:qps_function_info::__anon1	typeref:struct:qps_function_info::__anon1::qps_function_triangle
+triangle	ConnectionOptions.h	/^  struct qps_function_triangle triangle;$/;"	m	struct:qps_function_qtriangle	typeref:struct:qps_function_qtriangle::qps_function_triangle
+triangle	mutilate.cc	/^static int triangle(struct qps_function_triangle *p, double t) {$/;"	f	file:
+tv_to_double	util.h	/^inline double tv_to_double(struct timeval *tv) {$/;"	f
+tx_bytes	AgentStats.h	/^  uint64_t rx_bytes, tx_bytes;$/;"	m	class:AgentStats
+tx_bytes	ConnectionStats.h	/^  uint64_t rx_bytes, tx_bytes;$/;"	m	class:ConnectionStats
+type	ConnectionOptions.h	/^  enum qps_function_type type;$/;"	m	struct:qps_function_info	typeref:enum:qps_function_info::qps_function_type
+type	Generator.h	/^  std::string type;$/;"	m	class:Generator
+type	Operation.h	/^  type_enum type;$/;"	m	class:Operation
+type	mutilate.cc	/^  enum type {$/;"	g	struct:agent_stats_msg	file:
+type	mutilate.cc	/^  } type;$/;"	m	struct:agent_stats_msg	typeref:enum:agent_stats_msg::type	file:
+type_enum	Operation.h	/^  enum type_enum {$/;"	g	class:Operation
+unlikely	Connection.cc	615;"	d	file:
+update	ConnectionOptions.h	/^  double update;$/;"	m	struct:__anon2
+username	ConnectionOptions.h	/^  char username[32];$/;"	m	struct:__anon2
+val	mutilate.cc	/^  int val;$/;"	m	struct:__anon6	file:
+val_size	Generator.h	/^    Generator* val_size;$/;"	m	class:CustomKeyGenerator
+value	Generator.h	/^  double value;$/;"	m	class:Fixed
+valuesize	Connection.h	/^  Generator *valuesize;$/;"	m	class:Connection
+valuesize	ConnectionOptions.h	/^  char valuesize[32];$/;"	m	struct:__anon2
+vbucket	binary_protocol.h	/^   uint16_t vbucket; \/\/ request use$/;"	m	union:__anon3::__anon4
+version	binary_protocol.h	/^  uint64_t version;$/;"	m	struct:__anon3
+warmup	ConnectionOptions.h	/^  int warmup;$/;"	m	struct:__anon2
+warmup_rate	ConnectionOptions.h	/^  int warmup_rate;$/;"	m	struct:qps_function_info
+warmup_time	ConnectionOptions.h	/^  int warmup_time;$/;"	m	struct:qps_function_info
+width	HistogramSampler.h	/^  int width;$/;"	m	class:HistogramSampler
+write_callback	Connection.cc	/^void Connection::write_callback() {}$/;"	f	class:Connection
+write_state	Connection.h	/^  write_state_enum write_state;$/;"	m	class:Connection
+write_state_enum	Connection.h	/^  enum write_state_enum {$/;"	g	class:Connection
+~Connection	Connection.cc	/^Connection::~Connection() {$/;"	f	class:Connection
+~Discrete	Generator.h	/^  ~Discrete() { delete def; }$/;"	f	class:Discrete
+~Generator	Generator.h	/^  virtual ~Generator() {}$/;"	f	class:Generator
