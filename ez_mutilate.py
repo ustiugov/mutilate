@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import getpass
 import os
 import select
 import signal
@@ -96,17 +97,20 @@ def main():
     agents = agents.split(',')
 
   cwd = os.path.dirname(os.path.realpath(__file__))
+  remotedir = '/tmp/' + getpass.getuser()
+
   for agent in [master_agent] + agents:
+    subprocess.check_call(['ssh', agent, 'mkdir', '-p', remotedir])
     subprocess.call(['ssh', agent, 'pkill', 'mutilate'])
-    subprocess.check_call('scp -q %s/mutilate %s:/tmp' % (cwd, agent), shell = True)
+    subprocess.check_call('scp -q %s/mutilate %s:%s/mutilate' % (cwd, agent, remotedir), shell = True)
 
   with Runner() as runner:
     for agent in agents:
-      runner.execute(agent, 'ssh %s stdbuf -oL /tmp/mutilate --agentmode --threads=16 < /dev/null' % agent)
+      runner.execute(agent, 'ssh %s stdbuf -oL %s/mutilate --agentmode --threads=16 < /dev/null' % (agent, remotedir))
     try:
-      subprocess.check_call(['ssh', master_agent, '/tmp/mutilate'] + sys.argv[1:], stdin=open('/dev/null', 'r'))
+      subprocess.check_call(['ssh', master_agent, '%s/mutilate' % remotedir] + sys.argv[1:], stdin=open('/dev/null', 'r'))
     except:
-      subprocess.check_call(['ssh', master_agent, 'pkill', 'mutilate'])
+      subprocess.call(['ssh', master_agent, 'pkill', 'mutilate'])
       pass
 
 if __name__ == '__main__':
