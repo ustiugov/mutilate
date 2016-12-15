@@ -144,6 +144,7 @@ void Connection::issue_get(const char* key, double now) {
     string reqval = string("get ");
     reqval += string(key);
     keycount = int(getcount->generate());
+    keycount = min(keycount, 1000);
     for (i=1;i<keycount;i++) {
       reqval += string(" ");
       reqval += keygen->generate(lrand48() % options.records);
