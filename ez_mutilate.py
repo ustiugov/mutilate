@@ -87,7 +87,9 @@ def rmopt(args, short, long):
 def main():
   agents = getopt(sys.argv, '-a', '--agent')
   master_agent = getopt(sys.argv, None, '--master-agent')
+  src_ports_def = getopt(sys.argv, None, '--src-port')
   sys.argv = rmopt(sys.argv, None, '--master-agent')
+  sys.argv = rmopt(sys.argv, None, '--src-port')
 
   assert master_agent is not None
 
@@ -95,6 +97,15 @@ def main():
     agents = []
   else:
     agents = agents.split(',')
+
+  src_ports = None
+  if src_ports_def is not None:
+    src_ports = {}
+    for x in src_ports_def.split(':'):
+      if len(x) == 0:
+        continue
+      host, ports = x.split(',', 1)
+      src_ports[host] = ports
 
   cwd = os.path.dirname(os.path.realpath(__file__))
   remotedir = '/tmp/' + getpass.getuser()
@@ -106,9 +117,16 @@ def main():
 
   with Runner() as runner:
     for agent in agents:
-      runner.execute(agent, 'ssh %s stdbuf -oL %s/mutilate --agentmode --threads=16 < /dev/null' % (agent, remotedir))
+      params = '--agentmode --threads=16'
+      if src_ports is not None:
+        params += ' --src-port %s' % src_ports[agent]
+      runner.execute(agent, 'ssh %s stdbuf -oL %s/mutilate %s < /dev/null' % (agent, remotedir, params))
+    params = sys.argv[1:]
+    if src_ports is not None:
+      params.append('--src-port')
+      params.append(src_ports[master_agent])
     try:
-      subprocess.call(['ssh', master_agent, '%s/mutilate' % remotedir] + sys.argv[1:], stdin=open('/dev/null', 'r'))
+      subprocess.call(['ssh', master_agent, '%s/mutilate' % remotedir] + params, stdin=open('/dev/null', 'r'))
     finally:
       subprocess.call(['ssh', master_agent, 'pkill', 'mutilate'])
 
