@@ -27,7 +27,7 @@ class Connection {
 public:
   Connection(struct event_base* _base, struct evdns_base* _evdns,
              string _hostname, string _port, options_t options,
-             bool sampling = true);
+             int _src_port, bool sampling = true);
   ~Connection();
 
   string hostname;
@@ -130,4 +130,6 @@ private:
   
   // Disconnects from the server, if connected, and reconnects; true on success
   bool reset_connection();
+
+  int src_port;
 };

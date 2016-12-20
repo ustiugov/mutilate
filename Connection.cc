@@ -18,9 +18,10 @@
 
 Connection::Connection(struct event_base* _base, struct evdns_base* _evdns,
                        string _hostname, string _port, options_t _options,
-                       bool sampling) :
+                       int _src_port, bool sampling) :
   hostname(_hostname), port(_port), start_time(0),
-  stats(sampling), options(_options), base(_base), evdns(_evdns), bev(NULL)
+  stats(sampling), options(_options), base(_base), evdns(_evdns), bev(NULL),
+  src_port(_src_port)
 {
   valuesize = createGenerator(options.valuesize);
   keysize = createGenerator(options.keysize);
@@ -700,10 +701,28 @@ bool Connection::is_connected_to_server() {
 }
 
 bool Connection::connect_to_server() {
+    int fd = -1, one = 1;
+
     if (is_connected_to_server())
       return false;
     
-    bev = bufferevent_socket_new(base, -1, BEV_OPT_CLOSE_ON_FREE);
+    if (src_port) {
+      int ret;
+      struct sockaddr_in addr = {0};
+
+      fd = socket(AF_INET, SOCK_STREAM, 0);
+      assert(fd != -1);
+
+      ret = setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (void *) &one, sizeof(one));
+      assert(!ret);
+
+      addr.sin_family = AF_INET;
+      addr.sin_port = htons(src_port);
+      ret = bind(fd, (sockaddr *) &addr, sizeof(addr));
+      assert(!ret);
+    }
+
+    bev = bufferevent_socket_new(base, fd, BEV_OPT_CLOSE_ON_FREE);
     
     bufferevent_setcb(bev, bev_read_cb, bev_write_cb, bev_event_cb, this);
     bufferevent_enable(bev, EV_READ | EV_WRITE);

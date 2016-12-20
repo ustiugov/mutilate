@@ -59,6 +59,7 @@ struct thread_data {
 #ifdef HAVE_LIBZMQ
   zmq::socket_t *socket;
 #endif
+  vector<int> src_ports;
 };
 
 // struct evdns_base *evdns;
@@ -117,7 +118,7 @@ void go(const vector<string> &servers, options_t &options,
 );
 
 void do_mutilate(const vector<string> &servers, options_t &options,
-                 ConnectionStats &stats, bool master = true
+                 ConnectionStats &stats, const vector<int>& src_ports, bool master = true
 #ifdef HAVE_LIBZMQ
 , zmq::socket_t* socket = NULL
 #endif
@@ -906,6 +907,17 @@ int main(int argc, char **argv) {
   cmdline_parser_free(&args);
 }
 
+void populate_src_ports(vector<int>& src_ports, int offset, int count) {
+  if (args.src_port_given == 0)
+    return;
+
+  for (int c = 0; c < count; c++) {
+    int src_port = atoi(args.src_port_arg[offset + c]);
+    assert(0 < src_port && src_port <= 0xffff);
+    src_ports.push_back(src_port);
+  }
+}
+
 void go(const vector<string>& servers, options_t& options,
         ConnectionStats &stats
 #ifdef HAVE_LIBZMQ
@@ -929,6 +941,12 @@ void go(const vector<string>& servers, options_t& options,
 
     int current_cpu = -1;
 
+    int conns = args.measure_connections_given ? args.measure_connections_arg :
+      options.connections;
+
+    if (args.src_port_given && args.src_port_given < (unsigned) conns * options.threads)
+      DIE("need at least %d source ports. %d were given.", conns * options.threads, args.src_port_given);
+
     for (int t = 0; t < options.threads; t++) {
       td[t].options = &options;
 #ifdef HAVE_LIBZMQ
@@ -946,6 +964,8 @@ void go(const vector<string>& servers, options_t& options,
       } else {
         td[t].servers = &servers;
       }
+
+      populate_src_ports(td[t].src_ports, t * conns, conns);
 
       pthread_attr_t attr;
       pthread_attr_init(&attr);
@@ -983,7 +1003,17 @@ void go(const vector<string>& servers, options_t& options,
       delete cs;
     }
   } else if (options.threads == 1) {
-    do_mutilate(servers, options, stats, true
+    vector<int> src_ports;
+
+    int conns = args.measure_connections_given ? args.measure_connections_arg :
+      options.connections;
+
+    if (args.src_port_given && args.src_port_given < (unsigned) conns * options.threads)
+      DIE("need at least %d source ports. %d were given.", conns * options.threads, args.src_port_given);
+
+    populate_src_ports(src_ports, 0, args.src_port_given);
+
+    do_mutilate(servers, options, stats, src_ports, true
 #ifdef HAVE_LIBZMQ
 , socket
 #endif
@@ -1014,7 +1044,7 @@ void* thread_main(void *arg) {
 
   ConnectionStats *cs = new ConnectionStats();
 
-  do_mutilate(*td->servers, *td->options, *cs, td->master
+  do_mutilate(*td->servers, *td->options, *cs, td->src_ports, td->master
 #ifdef HAVE_LIBZMQ
 , td->socket
 #endif
@@ -1121,7 +1151,7 @@ static void report_stats_print(double now, int qps, ConnectionStats &report_stat
 }
 
 void do_mutilate(const vector<string>& servers, options_t& options,
-                 ConnectionStats& stats, bool master
+                 ConnectionStats& stats, const vector<int>& src_ports, bool master
 #ifdef HAVE_LIBZMQ
 , zmq::socket_t* socket
 #endif
@@ -1177,9 +1207,13 @@ void do_mutilate(const vector<string>& servers, options_t& options,
     int conns = args.measure_connections_given ? args.measure_connections_arg :
       options.connections;
 
+    if (args.src_port_given)
+      assert((unsigned) conns <= src_ports.size());
+
     for (int c = 0; c < conns; c++) {
+      int src_port = args.src_port_given ? src_ports[c] : 0;
       Connection* conn = new Connection(base, evdns, hostname, port, options,
-                                        args.agentmode_given ? false :
+                                        src_port, args.agentmode_given ? false :
                                         true);
       connections.push_back(conn);
       if (c == 0) server_lead.push_back(conn);

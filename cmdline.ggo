@@ -83,6 +83,8 @@ option "scan-search" - "Scan latency and search for the QPS. (i.e. \
 --scan-search 95:1000,20:10:100,500:50 means scan from 20KQPS to 100KQPS in
 10KQPS steps and then in 500KQPS steps while 95% of requests are faster than
 1000us, then go back one step, and do 50KPQS steps)." string
+option "src-port" - "A list of IP source ports to use in order to achieve \
+desired RSS queue distribution." string multiple
 
 text "\nAgent-mode options:"
 option "agentmode" A "Run client in agent mode."
