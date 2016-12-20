@@ -108,10 +108,9 @@ def main():
     for agent in agents:
       runner.execute(agent, 'ssh %s stdbuf -oL %s/mutilate --agentmode --threads=16 < /dev/null' % (agent, remotedir))
     try:
-      subprocess.check_call(['ssh', master_agent, '%s/mutilate' % remotedir] + sys.argv[1:], stdin=open('/dev/null', 'r'))
-    except:
+      subprocess.call(['ssh', master_agent, '%s/mutilate' % remotedir] + sys.argv[1:], stdin=open('/dev/null', 'r'))
+    finally:
       subprocess.call(['ssh', master_agent, 'pkill', 'mutilate'])
-      pass
 
 if __name__ == '__main__':
   try:
