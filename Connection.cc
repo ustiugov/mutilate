@@ -569,6 +569,8 @@ void Connection::read_callback() {
       loader_completed++;
       pop_op();
 
+      if ((loader_completed % (options.records / 10)) == 0)
+        V("Loading database: %d%% done.", 100 * loader_completed /options.records);
       if (loader_completed == options.records) {
         D("Finished loading.");
         read_state = IDLE;
