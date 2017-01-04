@@ -128,8 +128,10 @@ void* thread_main(void *arg);
 
 #ifdef HAVE_LIBZMQ
 static std::string s_recv (zmq::socket_t &socket) {
+  bool ret;
   zmq::message_t message;
-  socket.recv(&message);
+  ret = socket.recv(&message);
+  assert(ret == true);
 
   return std::string(static_cast<char*>(message.data()), message.size());
 }
@@ -258,6 +260,7 @@ void agent() {
 
 void prep_agent(const vector<string>& servers, options_t& options) {
   int sum = options.lambda_denom;
+  bool ret;
   if (args.measure_connections_given)
     sum = args.measure_connections_arg * options.server_given * options.threads;
 
@@ -274,7 +277,8 @@ void prep_agent(const vector<string>& servers, options_t& options) {
     s->send(message);
 
     zmq::message_t rep;
-    s->recv(&rep);
+    ret = s->recv(&rep);
+    assert(ret == true);
     unsigned int num = *((int *) rep.data());
 
     sum += options.connections * (options.roundrobin ?
@@ -343,13 +347,15 @@ static bool agent_stats_tx_scan_search_ctx(zmq::socket_t *s, struct scan_search_
 }
 
 void finish_agent(ConnectionStats &stats) {
+  bool ret;
   for (auto s: agent_sockets) {
     agent_stats_tx_stats(s);
 
     AgentStats as;
     zmq::message_t message;
 
-    s->recv(&message);
+    ret = s->recv(&message);
+    assert(ret == true);
     memcpy(&as, message.data(), sizeof(as));
     stats.accumulate(as);
 
@@ -725,6 +731,7 @@ int main(int argc, char **argv) {
       string host = string("tcp://") + string(args.agent_arg[i]) +
         string(":") + string(args.agent_port_arg);
       s->connect(host.c_str());
+      s->setsockopt(ZMQ_RCVTIMEO, 1000);
       agent_sockets.push_back(s);
     }
   }
@@ -1117,6 +1124,7 @@ static bool report_stats_is_time(double now) {
 
 static ConnectionStats report_stats_get(double now, int qps) {
   ConnectionStats stats;
+  bool ret;
   for (Connection *conn: all_connections)
     stats.accumulate(conn->stats);
 
@@ -1126,7 +1134,8 @@ static ConnectionStats report_stats_get(double now, int qps) {
     AgentStats as;
     zmq::message_t message;
 
-    s->recv(&message);
+    ret = s->recv(&message);
+    assert(ret == true);
     memcpy(&as, message.data(), sizeof(as));
     stats.accumulate(as);
   }
