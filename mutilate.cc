@@ -895,7 +895,10 @@ int main(int argc, char **argv) {
         DIE("--save: failed to open %s: %s", args.save_arg, strerror(errno));
 
       for (auto i: stats.get_sampler.samples) {
-        fprintf(file, "%f %f\n", i.start_time - boot_time, i.time());
+        fprintf(file, "%d %f %f %s(%ld)\n", i.port, i.start_time - boot_time, i.time(), i.type == Operation::GET ? "GET" : (i.type == Operation::SET ? "SET" : "UNK"), i.key.size());
+      }
+      for (auto i: stats.set_sampler.samples) {
+        fprintf(file, "%d %f %f %s(%ld)\n", i.port, i.start_time - boot_time, i.time(), i.type == Operation::GET ? "GET" : (i.type == Operation::SET ? "SET" : "UNK"), i.key.size());
       }
     }
   }

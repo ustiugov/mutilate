@@ -124,6 +124,7 @@ void Connection::issue_get(const char* key, double now) {
   }
 #endif
 
+  op.port = src_port;
   op.type = Operation::GET;
   op.key = string(key);
 
@@ -170,7 +171,9 @@ void Connection::issue_set(const char* key, const char* value, int length,
   else op.start_time = now;
 #endif
 
+  op.port = src_port;
   op.type = Operation::SET;
+  op.key = string(key);
   op_queue.push(op);
 
   if (read_state == IDLE)
