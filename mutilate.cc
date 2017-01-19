@@ -712,6 +712,7 @@ int main(int argc, char **argv) {
 
   init_random_stuff();
   boot_time = get_time();
+  srand48(boot_time * 1000000);
   setvbuf(stdout, NULL, _IONBF, 0);
 
   //  struct event_base *base;
