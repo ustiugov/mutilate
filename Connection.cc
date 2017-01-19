@@ -358,6 +358,17 @@ void Connection::event_callback(short events) {
     int fd = bufferevent_getfd(bev);
     if (fd < 0) DIE("bufferevent_getfd");
 
+    struct sockaddr_in addr;
+    socklen_t len = sizeof(addr);
+    int ret = getsockname(fd, (struct sockaddr *) &addr, &len);
+    assert(!ret);
+    int local_port = ntohs(addr.sin_port);
+
+    if (src_port)
+      assert(src_port == local_port);
+    else
+      src_port = local_port;
+
     if (!options.no_nodelay) {
       int one = 1;
       if (setsockopt(fd, IPPROTO_TCP, TCP_NODELAY,
