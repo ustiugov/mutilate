@@ -10,10 +10,10 @@ import threading
 
 class Runner:
   def __init__(self):
+    self.exiting = False
     self.procs = {}
     self.unblockr, self.unblockw = os.pipe()
     t = threading.Thread(target = self.reader)
-    t.daemon = True
     t.start()
 
   def execute(self, id, cmdline):
@@ -25,14 +25,17 @@ class Runner:
     return self
 
   def __exit__(self, type, value, traceback):
+    self.exiting = True
     for id, proc in self.procs.items():
       os.killpg(os.getpgid(proc.pid), signal.SIGTERM)
       proc.wait()
+    else:
+      os.write(self.unblockw, 'x')
 
   def reader(self):
     buf = {}
 
-    while True:
+    while not self.exiting:
       for id in self.procs:
         if id + '/out' not in buf:
           buf[id + '/out'] = ''
