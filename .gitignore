@@ -4,6 +4,7 @@
 config.log
 gmon.out
 mutilate
+mutilateudp
 cmdline.cc
 cmdline.h
 gtest

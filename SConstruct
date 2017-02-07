@@ -55,3 +55,5 @@ if not env['HAVE_POSIX_BARRIER']: # USE_POSIX_BARRIER:
 env.Program(target='mutilate', source=src)
 env.Program(target='gtest', source=['TestGenerator.cc', 'log.cc', 'util.cc',
                                     'Generator.cc'])
+env.Program(target='mutilateudp', source=Split('''mutilateudp.cc cmdline.cc
+  log.cc Generator.cc distributions.cc util.cc common.cc UDPConnection.cc'''))

@@ -28,4 +28,11 @@ typedef struct __attribute__ ((__packed__)) {
   uint64_t extras;
 } binary_header_t;
 
+typedef struct __attribute__ ((__packed__)) {
+  uint16_t req_id;
+  uint16_t seq_no;
+  uint16_t datagrams;
+  uint16_t reserved;
+} udp_header_t;
+
 #endif /* BINARY_PROTOCOL_H */
