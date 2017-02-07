@@ -33,7 +33,7 @@
 #endif
 #include "cmdline.h"
 #include "common.h"
-#include "Connection.h"
+#include "TCPConnection.h"
 #include "ConnectionOptions.h"
 #include "log.h"
 #include "mutilate.h"
@@ -69,7 +69,7 @@ pthread_barrier_t finish_barrier;
 double boot_time;
 
 pthread_mutex_t all_connections_mutex;
-vector<Connection*> all_connections;
+vector<TCPConnection*> all_connections;
 
 static struct {
   double prv_time;
@@ -249,8 +249,8 @@ bool qps_function_enabled(options_t *options) {
   return options->qps_function.type != qps_function_type::NONE;
 }
 
-void qps_function_adjust(options_t *options, vector<Connection*>& connections, int qps) {
-  for (Connection *conn: connections) {
+void qps_function_adjust(options_t *options, vector<TCPConnection*>& connections, int qps) {
+  for (TCPConnection *conn: connections) {
     conn->options.lambda = (double) qps / (double) options->lambda_denom * args.lambda_mul_arg;
     conn->iagen->set_lambda(conn->options.lambda);
   }
@@ -680,7 +680,7 @@ static bool report_stats_is_time(double now) {
 static ConnectionStats report_stats_get(double now, int qps) {
   ConnectionStats stats;
   bool ret;
-  for (Connection *conn: all_connections)
+  for (TCPConnection *conn: all_connections)
     stats.accumulate(conn->stats);
 
   for (auto s: agent_sockets) {
@@ -749,8 +749,8 @@ void do_mutilate(const vector<string>& servers, options_t& options,
   double start = get_time();
   double now = start;
 
-  vector<Connection*> connections;
-  vector<Connection*> server_lead;
+  vector<TCPConnection*> connections;
+  vector<TCPConnection*> server_lead;
 
   for (auto s: servers) {
     // Split args.server_arg[s] into host:port using strtok().
@@ -776,7 +776,7 @@ void do_mutilate(const vector<string>& servers, options_t& options,
 
     for (int c = 0; c < conns; c++) {
       int src_port = args.src_port_given ? src_ports[c] : 0;
-      Connection* conn = new Connection(base, evdns, hostname, port, options,
+      TCPConnection* conn = new TCPConnection(base, evdns, hostname, port, options,
                                         src_port, args.agentmode_given ? false :
                                         true);
       connections.push_back(conn);
@@ -795,8 +795,8 @@ void do_mutilate(const vector<string>& servers, options_t& options,
     event_base_loop(base, EVLOOP_ONCE);
 
     bool restart = false;
-    for (Connection *conn: connections)
-      if (conn->read_state != Connection::IDLE)
+    for (TCPConnection *conn: connections)
+      if (conn->read_state != TCPConnection::IDLE)
         restart = true;
 
     if (restart) continue;
@@ -816,8 +816,8 @@ void do_mutilate(const vector<string>& servers, options_t& options,
       event_base_loop(base, EVLOOP_ONCE);
 
       bool restart = false;
-      for (Connection *conn: connections)
-        if (conn->read_state != Connection::IDLE)
+      for (TCPConnection *conn: connections)
+        if (conn->read_state != TCPConnection::IDLE)
           restart = true;
 
       if (restart) continue;
@@ -858,7 +858,7 @@ void do_mutilate(const vector<string>& servers, options_t& options,
     //    options.time = 1;
 
     start = get_time();
-    for (Connection *conn: connections) {
+    for (TCPConnection *conn: connections) {
       conn->start_time = start;
       conn->options.time = options.warmup;
       conn->drive_write_machine(); // Kick the Connection into motion.
@@ -876,7 +876,7 @@ void do_mutilate(const vector<string>& servers, options_t& options,
       //#endif
 
       bool restart = false;
-      for (Connection *conn: connections)
+      for (TCPConnection *conn: connections)
         if (!conn->check_exit_condition(now))
           restart = true;
 
@@ -885,8 +885,8 @@ void do_mutilate(const vector<string>& servers, options_t& options,
     }
 
     bool restart = false;
-    for (Connection *conn: connections)
-      if (conn->read_state != Connection::IDLE)
+    for (TCPConnection *conn: connections)
+      if (conn->read_state != TCPConnection::IDLE)
         restart = true;
 
     if (restart) {
@@ -900,8 +900,8 @@ void do_mutilate(const vector<string>& servers, options_t& options,
       event_base_loop(base, EVLOOP_ONCE); // EVLOOP_NONBLOCK);
 
       bool restart = false;
-      for (Connection *conn: connections)
-        if (conn->read_state != Connection::IDLE)
+      for (TCPConnection *conn: connections)
+        if (conn->read_state != TCPConnection::IDLE)
           restart = true;
 
       if (restart) continue;
@@ -910,7 +910,7 @@ void do_mutilate(const vector<string>& servers, options_t& options,
     }
 
     //    options.time = old_time;
-    for (Connection *conn: connections) {
+    for (TCPConnection *conn: connections) {
       conn->reset();
       //      conn->stats = ConnectionStats();
       conn->options.time = old_time;
@@ -947,7 +947,7 @@ void do_mutilate(const vector<string>& servers, options_t& options,
     V("started at %f", get_time());
 
   start = get_time();
-  for (Connection *conn: connections) {
+  for (TCPConnection *conn: connections) {
     conn->start_time = start;
     conn->drive_write_machine(); // Kick the Connection into motion.
   }
@@ -997,7 +997,7 @@ void do_mutilate(const vector<string>& servers, options_t& options,
     //#endif
 
     bool restart = false;
-    for (Connection *conn: connections)
+    for (TCPConnection *conn: connections)
       if (!conn->check_exit_condition(now))
         restart = true;
 
@@ -1037,7 +1037,7 @@ void do_mutilate(const vector<string>& servers, options_t& options,
     V("stopped at %f  options.time = %d", get_time(), options.time);
 
   // Tear-down and accumulate stats.
-  for (Connection *conn: connections) {
+  for (TCPConnection *conn: connections) {
     stats.accumulate(conn->stats);
     delete conn;
   }

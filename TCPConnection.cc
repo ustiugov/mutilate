@@ -9,14 +9,14 @@
 
 #include "config.h"
 
-#include "Connection.h"
+#include "TCPConnection.h"
 #include "distributions.h"
 #include "Generator.h"
 #include "mutilate.h"
 #include "binary_protocol.h"
 #include "util.h"
 
-Connection::Connection(struct event_base* _base, struct evdns_base* _evdns,
+TCPConnection::TCPConnection(struct event_base* _base, struct evdns_base* _evdns,
                        string _hostname, string _port, options_t _options,
                        int _src_port, bool sampling) :
   hostname(_hostname), port(_port), start_time(0),
@@ -57,7 +57,7 @@ Connection::Connection(struct event_base* _base, struct evdns_base* _evdns,
   reset_numreq_threshold();
 }
 
-Connection::~Connection() {
+TCPConnection::~TCPConnection() {
   event_free(timer);
   timer = NULL;
 
@@ -76,7 +76,7 @@ Connection::~Connection() {
   delete valuesize;
 }
 
-void Connection::reset() {
+void TCPConnection::reset() {
   // FIXME: Actually check the connection, drain all bufferevents, drain op_q.
   assert(op_queue.size() == 0);
   evtimer_del(timer);
@@ -86,7 +86,7 @@ void Connection::reset() {
 }
 
 
-void Connection::issue_sasl() {
+void TCPConnection::issue_sasl() {
   read_state = WAITING_FOR_SASL;
 
   string username = string(options.username);
@@ -102,7 +102,7 @@ void Connection::issue_sasl() {
   bufferevent_write(bev, password.c_str(), password.length());
 }
 
-void Connection::issue_get(const char* key, double now) {
+void TCPConnection::issue_get(const char* key, double now) {
   Operation op;
   int l, keycount, i;
   uint16_t keylen = strlen(key);
@@ -158,7 +158,7 @@ void Connection::issue_get(const char* key, double now) {
   if (read_state != LOADING) stats.tx_bytes += l;
 }
 
-void Connection::issue_set(const char* key, const char* value, int length,
+void TCPConnection::issue_set(const char* key, const char* value, int length,
                            double now) {
   Operation op;
   int l;
@@ -200,7 +200,7 @@ void Connection::issue_set(const char* key, const char* value, int length,
   if (read_state != LOADING) stats.tx_bytes += l;
 }
 
-void Connection::issue_something(double now) {
+void TCPConnection::issue_something(double now) {
   char key[256];
   // FIXME: generate key distribution here!
 #ifdef USE_CUSTOM_PROTOCOL
@@ -221,7 +221,7 @@ void Connection::issue_something(double now) {
   }
 }
 
-void Connection::pop_op() {
+void TCPConnection::pop_op() {
   assert(op_queue.size() > 0);
 
   op_queue.pop();
@@ -240,7 +240,7 @@ void Connection::pop_op() {
   }
 }
 
-bool Connection::check_exit_condition(double now) {
+bool TCPConnection::check_exit_condition(double now) {
   if (read_state == INIT_READ) return false;
   if (now == 0.0) now = get_time();
   if (now > start_time + options.time) return true;
@@ -252,7 +252,7 @@ bool Connection::check_exit_condition(double now) {
 // command.  Note that this function loops.  Be wary of break
 // vs. return.
 
-void Connection::drive_write_machine(double now) {
+void TCPConnection::drive_write_machine(double now) {
   if (now == 0.0) now = get_time();
 
   double delay;
@@ -352,7 +352,7 @@ void Connection::drive_write_machine(double now) {
   }
 }
 
-void Connection::event_callback(short events) {
+void TCPConnection::event_callback(short events) {
   //  struct timeval now_tv;
   // event_base_gettimeofday_cached(base, &now_tv);
 
@@ -393,7 +393,7 @@ void Connection::event_callback(short events) {
   }
 }
 
-void Connection::read_callback() {
+void TCPConnection::read_callback() {
   struct evbuffer *input = bufferevent_get_input(bev);
 #if USE_CACHED_TIME
   struct timeval now_tv;
@@ -623,7 +623,7 @@ void Connection::read_callback() {
  * @param input evBuffer to read response from
  * @return  true if consumed, false if not enough data in buffer.
  */
-bool Connection::consume_binary_response(evbuffer *input) {
+bool TCPConnection::consume_binary_response(evbuffer *input) {
   // Read the first 24 bytes as a header
   int length = evbuffer_get_length(input);
   if (length < 24) return false;
@@ -656,36 +656,36 @@ bool Connection::consume_binary_response(evbuffer *input) {
   return true;
 }
 
-void Connection::write_callback() {}
-void Connection::timer_callback() { drive_write_machine(); }
+void TCPConnection::write_callback() {}
+void TCPConnection::timer_callback() { drive_write_machine(); }
 
 // The follow are C trampolines for libevent callbacks.
 void bev_event_cb(struct bufferevent *bev, short events, void *ptr) {
-  Connection* conn = (Connection*) ptr;
+  TCPConnection* conn = (TCPConnection*) ptr;
   conn->event_callback(events);
 }
 
 void bev_read_cb(struct bufferevent *bev, void *ptr) {
-  Connection* conn = (Connection*) ptr;
+  TCPConnection* conn = (TCPConnection*) ptr;
   conn->read_callback();
 }
 
 void bev_write_cb(struct bufferevent *bev, void *ptr) {
-  Connection* conn = (Connection*) ptr;
+  TCPConnection* conn = (TCPConnection*) ptr;
   conn->write_callback();
 }
 
 void timer_cb(evutil_socket_t fd, short what, void *ptr) {
-  Connection* conn = (Connection*) ptr;
+  TCPConnection* conn = (TCPConnection*) ptr;
   conn->timer_callback();
 }
 
-void Connection::set_priority(int pri) {
+void TCPConnection::set_priority(int pri) {
   if (bufferevent_priority_set(bev, pri))
     DIE("bufferevent_set_priority(bev, %d) failed", pri);
 }
 
-void Connection::start_loading() {
+void TCPConnection::start_loading() {
   read_state = LOADING;
   loader_issued = loader_completed = 0;
 
@@ -703,7 +703,7 @@ void Connection::start_loading() {
   }
 }
 
-void Connection::reset_numreq_threshold() {
+void TCPConnection::reset_numreq_threshold() {
     numreq_count = 0;
     numreq_threshold = (unsigned long)numreq_threshold_gen->generate() - 1;
     
@@ -712,11 +712,11 @@ void Connection::reset_numreq_threshold() {
       numreq_threshold = 20;
 }
 
-bool Connection::is_connected_to_server() {
+bool TCPConnection::is_connected_to_server() {
     return (bev != NULL);
 }
 
-bool Connection::connect_to_server() {
+bool TCPConnection::connect_to_server() {
     int fd = -1, one = 1;
 
     if (is_connected_to_server())
@@ -751,7 +751,7 @@ bool Connection::connect_to_server() {
     return true;
 }
 
-bool Connection::disconnect_from_server() {
+bool TCPConnection::disconnect_from_server() {
     if (!is_connected_to_server())
       return false;
     
@@ -762,6 +762,6 @@ bool Connection::disconnect_from_server() {
     return true;
 }
 
-bool Connection::reset_connection() {
+bool TCPConnection::reset_connection() {
     return (disconnect_from_server() && connect_to_server());
 }

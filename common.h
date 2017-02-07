@@ -2,9 +2,9 @@
 
 #include <zmq.hpp>
 
-#include "Connection.h"
 #include "ConnectionOptions.h"
 #include "ConnectionStats.h"
+#include "TCPConnection.h"
 
 extern zmq::context_t context;
 extern vector<zmq::socket_t*> agent_sockets;
@@ -47,7 +47,7 @@ extern struct scan_search_params_struct scan_search_params;
 extern volatile bool received_stop;
 extern pthread_barrier_t finish_barrier;
 extern struct scan_search_ctx scans_ctx;
-extern vector<Connection*> all_connections;
+extern vector<TCPConnection*> all_connections;
 
 std::string s_recv (zmq::socket_t &socket);
 bool s_send (zmq::socket_t &socket, const std::string &string);

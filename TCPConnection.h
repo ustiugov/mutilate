@@ -25,12 +25,12 @@ void bev_read_cb(struct bufferevent *bev, void *ptr);
 void bev_write_cb(struct bufferevent *bev, void *ptr);
 void timer_cb(evutil_socket_t fd, short what, void *ptr);
 
-class Connection {
+class TCPConnection {
 public:
-  Connection(struct event_base* _base, struct evdns_base* _evdns,
+  TCPConnection(struct event_base* _base, struct evdns_base* _evdns,
              string _hostname, string _port, options_t options,
              int _src_port, bool sampling = true);
-  ~Connection();
+  ~TCPConnection();
 
   string hostname;
   string port;
