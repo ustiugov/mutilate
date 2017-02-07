@@ -8,6 +8,7 @@
 
 #include <vector>
 
+#include "log.h"
 #include "mutilate.h"
 #include "Operation.h"
 
