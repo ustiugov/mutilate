@@ -69,7 +69,7 @@ pthread_barrier_t finish_barrier;
 double boot_time;
 
 pthread_mutex_t all_connections_mutex;
-vector<TCPConnection*> all_connections;
+vector<Connection*> all_connections;
 
 static struct {
   double prv_time;
@@ -680,7 +680,7 @@ static bool report_stats_is_time(double now) {
 static ConnectionStats report_stats_get(double now, int qps) {
   ConnectionStats stats;
   bool ret;
-  for (TCPConnection *conn: all_connections)
+  for (Connection *conn: all_connections)
     stats.accumulate(conn->stats);
 
   for (auto s: agent_sockets) {

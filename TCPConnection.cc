@@ -19,8 +19,8 @@
 TCPConnection::TCPConnection(struct event_base* _base, struct evdns_base* _evdns,
                        string _hostname, string _port, options_t _options,
                        int _src_port, bool sampling) :
-  hostname(_hostname), port(_port), start_time(0),
-  stats(sampling), options(_options), base(_base), evdns(_evdns), bev(NULL),
+  Connection(sampling), hostname(_hostname), port(_port), start_time(0),
+  options(_options), base(_base), evdns(_evdns), bev(NULL),
   src_port(_src_port)
 {
   valuesize = createGenerator(options.valuesize);

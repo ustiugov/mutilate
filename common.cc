@@ -422,7 +422,7 @@ void* agent_stats_thread(void *arg) {
 
     AgentStats as = {0};
 
-    for (TCPConnection *conn: all_connections) {
+    for (Connection *conn: all_connections) {
       as.rx_bytes += conn->stats.rx_bytes;
       as.tx_bytes += conn->stats.tx_bytes;
       as.gets += conn->stats.gets;
