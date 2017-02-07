@@ -22,6 +22,8 @@ public:
   double time() const { return (end_time - start_time) * 1000000; }
 
   int port;
+
+  int req_id;
 };
 
 
