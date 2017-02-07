@@ -1,5 +1,7 @@
 // -*- c++-mode -*-
 
+#pragma once
+
 #include <queue>
 #include <string>
 
