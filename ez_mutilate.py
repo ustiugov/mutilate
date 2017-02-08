@@ -69,21 +69,34 @@ class Runner:
         for line in lines:
           print >>sys.stderr, '%s: %s' % (tag, line)
 
-def getopt(args, short, long):
+def getopt(args, short, long, has_value = True):
   for i in xrange(len(args)):
-    if args[i].startswith('%s=' % long):
+    if has_value and args[i].startswith('%s=' % long):
       return args[i].split('=')[1]
-    elif i+1 < len(args) and (args[i] == long or args[i] == short):
-      return args[i+1]
-  return None
+    elif args[i] == long or args[i] == short:
+      if has_value and i+1 < len(args):
+        return args[i+1]
+      elif not has_value:
+        return True
+      else:
+        assert 0
+  if has_value:
+    return None
+  else:
+    return False
 
-def rmopt(args, short, long):
+def rmopt(args, short, long, has_value = True):
   for i in xrange(len(args)):
-    if args[i].startswith('%s=' % long):
+    if has_value and args[i].startswith('%s=' % long):
       del args[i]
       break
-    elif i+1 < len(args) and (args[i] == long or args[i] == short):
-      del args[i:i+2]
+    elif args[i] == long or args[i] == short:
+      if has_value and i+1 < len(args):
+        del args[i:i+2]
+      elif not has_value:
+        del args[i]
+      else:
+        assert 0
       break
   return args
 
@@ -91,8 +104,10 @@ def main():
   agents = getopt(sys.argv, '-a', '--agent')
   master_agent = getopt(sys.argv, None, '--master-agent')
   src_ports_def = getopt(sys.argv, None, '--src-port')
+  udp = getopt(sys.argv, None, '--udp', has_value = False)
   sys.argv = rmopt(sys.argv, None, '--master-agent')
   sys.argv = rmopt(sys.argv, None, '--src-port')
+  sys.argv = rmopt(sys.argv, None, '--udp', has_value = False)
 
   assert master_agent is not None
 
@@ -110,28 +125,33 @@ def main():
       host, ports = x.split(',', 1)
       src_ports[host] = ports
 
+  if udp:
+    binary = 'mutilateudp'
+  else:
+    binary = 'mutilate'
+
   cwd = os.path.dirname(os.path.realpath(__file__))
   remotedir = '/tmp/' + getpass.getuser()
 
   for agent in [master_agent] + agents:
     subprocess.check_call(['ssh', agent, 'mkdir', '-p', remotedir])
-    subprocess.call(['ssh', agent, 'pkill', 'mutilate'])
-    subprocess.check_call('scp -q %s/mutilate %s:%s/mutilate' % (cwd, agent, remotedir), shell = True)
+    subprocess.call('ssh %s "pkill mutilate; pkill mutilateudp"' % agent, shell = True)
+    subprocess.check_call('scp -q %s/%s %s:%s/%s' % (cwd, binary, agent, remotedir, binary), shell = True)
 
   with Runner() as runner:
     for agent in agents:
       params = '--agentmode --threads=16'
       if src_ports is not None:
         params += ' --src-port %s' % src_ports[agent]
-      runner.execute(agent, 'ssh %s stdbuf -oL %s/mutilate %s < /dev/null' % (agent, remotedir, params))
+      runner.execute(agent, 'ssh %s stdbuf -oL %s/%s %s < /dev/null' % (agent, remotedir, binary, params))
     params = sys.argv[1:]
     if src_ports is not None:
       params.append('--src-port')
       params.append(src_ports[master_agent])
     try:
-      subprocess.call(['ssh', master_agent, '%s/mutilate' % remotedir] + params, stdin=open('/dev/null', 'r'))
+      subprocess.call(['ssh', master_agent, '%s/%s' % (remotedir, binary)] + params, stdin=open('/dev/null', 'r'))
     finally:
-      subprocess.call(['ssh', master_agent, 'pkill', 'mutilate'])
+      subprocess.call(['ssh', master_agent, 'pkill', binary])
 
 if __name__ == '__main__':
   try:
