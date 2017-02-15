@@ -9,6 +9,7 @@ using namespace std;
 class Operation {
 public:
   double start_time, end_time;
+  double last_xmit;
 
   enum type_enum {
     GET, SET, SASL

@@ -11,6 +11,8 @@
 #include "binary_protocol.h"
 #include "log.h"
 
+#define RETRANSMIT_INTERVAL 0.01 /* seconds */
+
 size_t OpQueue::size()
 {
 	return list.size();
@@ -37,7 +39,27 @@ Operation *OpQueue::find(uint16_t req_id)
 	for (Operation &op: list)
 		if (op.req_id == req_id)
 			return &op;
-	assert(0);
+	return NULL;
+}
+
+Operation *OpQueue::earliest_last_xmit(void)
+{
+	assert(!list.empty());
+	Operation *ret = &list.front();
+	for (Operation &op: list)
+		if (op.last_xmit < ret->last_xmit)
+			ret = &op;
+	return ret;
+}
+
+std::list<Operation>::iterator OpQueue::begin()
+{
+	return list.begin();
+}
+
+std::list<Operation>::iterator OpQueue::end()
+{
+	return list.end();
 }
 
 void UDPConnection::pop_op(Operation *op)
@@ -59,8 +81,6 @@ Operation *UDPConnection::consume_udp_binary_response(char *data, size_t length)
 	binary_header_t *h = (binary_header_t *) (udp_header + 1);
 
 	Operation *op = op_queue.find(ntohs(udp_header->req_id));
-	assert(op);
-	assert(ntohs(udp_header->req_id) == op->req_id);
 	assert(udp_header->seq_no == 0);
 	assert(udp_header->datagrams == ntohs(1));
 	assert(udp_header->reserved == 0);
@@ -72,7 +92,7 @@ Operation *UDPConnection::consume_udp_binary_response(char *data, size_t length)
 	assert(length == targetLen);
 
 	// if something other than success, count it as a miss
-	if (h->status)
+	if (op && h->status)
 		stats.get_misses++;
 
 	stats.rx_bytes += targetLen;
@@ -82,11 +102,9 @@ Operation *UDPConnection::consume_udp_binary_response(char *data, size_t length)
 void UDPConnection::read_callback()
 {
 	Operation *op;
-	double now;
+	double now = 0;
 	char buf[2048];
 	ssize_t length;
-
-	assert(op_queue.size());
 
 	while (1) {
 		switch (read_state) {
@@ -98,13 +116,15 @@ void UDPConnection::read_callback()
 				return;
 			assert(length > 0 && (size_t) length < sizeof(buf));
 			op = consume_udp_binary_response(buf, length);
-			assert(op);
 
-			now = get_time();
-			op->end_time = now;
-			stats.log_get(*op);
+			// in case of duplicate response op will be NULL
+			if (op) {
+				now = get_time();
+				op->end_time = now;
+				stats.log_get(*op);
+				pop_op(op);
+			}
 
-			pop_op(op);
 			drive_write_machine(now);
 			break;
 		default:
@@ -138,6 +158,7 @@ void UDPConnection::issue_get(string *key, double now)
 		now = get_time();
 
 	op.start_time = now;
+	op.last_xmit = now;
 	op.type = Operation::GET;
 	op.req_id = req_id++;
 	op.key = *key;
@@ -179,6 +200,27 @@ void UDPConnection::issue_get(Operation &op)
 	stats.tx_bytes += l;
 }
 
+void UDPConnection::retransmit(double now)
+{
+	for (Operation &op: op_queue) {
+		if (now < op.last_xmit + RETRANSMIT_INTERVAL)
+			continue;
+		op.last_xmit = now;
+		issue_something(op);
+	}
+}
+
+void UDPConnection::issue_something(Operation &op)
+{
+	switch (op.type) {
+	case Operation::GET:
+		issue_get(op);
+		break;
+	default:
+		DIE("Not implemented");
+	}
+}
+
 void UDPConnection::issue_something(double now)
 {
 	string key = keygen->generate(lrand48() % options.records);
@@ -193,6 +235,7 @@ void UDPConnection::drive_write_machine(double now)
 	double delay;
 	struct timeval tv;
 
+	retransmit(now);
 	while (1) {
 		switch (write_state) {
 		case INIT_WRITE:
