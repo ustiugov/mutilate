@@ -18,8 +18,6 @@ private:
 	int idx = 0;
 };
 
-#include <iostream>
-
 class OpQueue {
 public:
 	size_t size();
