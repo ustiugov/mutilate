@@ -7,17 +7,6 @@
 #include "ConnectionOptions.h"
 #include "Generator.h"
 
-class Buffer {
-public:
-	size_t size(void);
-	void *pullup(size_t size);
-	void drain(size_t size);
-	ssize_t read_from_fd(int fd);
-private:
-	char data[4096];
-	int idx = 0;
-};
-
 class OpQueue {
 public:
 	size_t size();
@@ -38,14 +27,13 @@ public:
 	void timer_callback(void);
 	void read_callback(void);
 	void pop_op(Operation *op);
-	Operation *consume_udp_binary_response(Buffer *input);
+	Operation *consume_udp_binary_response(char *buf, size_t length);
 private:
 	int fd;
 	uint16_t req_id = 0;
 	KeyGenerator *keygen;
 	double next_time;
 	Generator *iagen;
-	Buffer buffer;
 	options_t options;
 	struct event *timer;
 	OpQueue op_queue;

@@ -11,32 +11,6 @@
 #include "binary_protocol.h"
 #include "log.h"
 
-size_t Buffer::size(void)
-{
-	return idx;
-}
-
-void *Buffer::pullup(size_t size)
-{
-	return data;
-}
-
-void Buffer::drain(size_t size)
-{
-	memmove(data, &data[size], size);
-	idx -= size;
-}
-
-ssize_t Buffer::read_from_fd(int fd)
-{
-	ssize_t ret = read(fd, &data[idx], sizeof(data) - idx);
-
-	assert(ret > 0);
-	idx += ret;
-
-	return ret;
-}
-
 size_t OpQueue::size()
 {
 	return list.size();
@@ -78,14 +52,10 @@ void UDPConnection::pop_op(Operation *op)
 		read_state = IDLE;
 }
 
-Operation *UDPConnection::consume_udp_binary_response(Buffer *input)
+Operation *UDPConnection::consume_udp_binary_response(char *data, size_t length)
 {
-	size_t length = input->size();
-	if (!length)
-		return NULL;
 	assert(length >= sizeof(udp_header_t) + 24);
-	unsigned char *data = (unsigned char *) input->pullup(sizeof(udp_header_t) + 24);
-	udp_header_t *udp_header =  (udp_header_t *) data;
+	udp_header_t *udp_header = (udp_header_t *) data;
 	binary_header_t *h = (binary_header_t *) (udp_header + 1);
 
 	Operation *op = op_queue.find(ntohs(udp_header->req_id));
@@ -105,7 +75,6 @@ Operation *UDPConnection::consume_udp_binary_response(Buffer *input)
 	if (h->status)
 		stats.get_misses++;
 
-	input->drain(targetLen);
 	stats.rx_bytes += targetLen;
 	return op;
 }
@@ -114,8 +83,8 @@ void UDPConnection::read_callback()
 {
 	Operation *op;
 	double now;
-
-	buffer.read_from_fd(fd);
+	char buf[2048];
+	ssize_t length;
 
 	assert(op_queue.size());
 
@@ -124,9 +93,12 @@ void UDPConnection::read_callback()
 		case IDLE:
 			return;
 		case WAITING_FOR_GET:
-			op = consume_udp_binary_response(&buffer);
-			if (op == NULL)
+			length = read(fd, buf, sizeof(buf));
+			if (length == -1 && errno == EAGAIN)
 				return;
+			assert(length > 0 && (size_t) length < sizeof(buf));
+			op = consume_udp_binary_response(buf, length);
+			assert(op);
 
 			now = get_time();
 			op->end_time = now;
