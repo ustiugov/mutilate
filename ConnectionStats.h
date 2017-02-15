@@ -29,7 +29,7 @@ class ConnectionStats {
    get_sampler(200), set_sampler(200), op_sampler(100),
 #endif
    rx_bytes(0), tx_bytes(0), gets(0), sets(0),
-   get_misses(0), skips(0), sampling(_sampling) {}
+   get_misses(0), skips(0), retransmits(0), sampling(_sampling) {}
 
 #ifdef USE_ADAPTIVE_SAMPLER
   AdaptiveSampler<Operation> get_sampler;
@@ -48,6 +48,7 @@ class ConnectionStats {
   uint64_t rx_bytes, tx_bytes;
   uint64_t gets, sets, get_misses;
   uint64_t skips;
+  uint64_t retransmits;
 
   double start, stop;
 
@@ -105,6 +106,7 @@ class ConnectionStats {
     sets += cs.sets;
     get_misses += cs.get_misses;
     skips += cs.skips;
+    retransmits += cs.retransmits;
 
     start = cs.start;
     stop = cs.stop;
@@ -117,6 +119,7 @@ class ConnectionStats {
     sets += as.sets;
     get_misses += as.get_misses;
     skips += as.skips;
+    retransmits += as.retransmits;
   }
 
   void substract(const ConnectionStats &cs) {
@@ -126,6 +129,7 @@ class ConnectionStats {
     sets -= cs.sets;
     get_misses -= cs.get_misses;
     skips -= cs.skips;
+    retransmits -= cs.retransmits;
 
     get_sampler.substract(cs.get_sampler);
     set_sampler.substract(cs.set_sampler);

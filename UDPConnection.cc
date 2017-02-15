@@ -207,6 +207,7 @@ void UDPConnection::retransmit(double now)
 			continue;
 		op.last_xmit = now;
 		issue_something(op);
+		stats.retransmits++;
 	}
 }
 

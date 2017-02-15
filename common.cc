@@ -363,6 +363,8 @@ void print_stats(ConnectionStats &stats, double boot_time, double peak_qps) {
   printf("Misses = %" PRIu64 " (%.1f%%)\n", stats.get_misses,
          (double) stats.get_misses/stats.gets*100);
 
+  printf("Retransmitted TXs = %" PRIu64 "\n", stats.retransmits);
+
   printf("Skipped TXs = %" PRIu64 " (%.1f%%)\n\n", stats.skips,
          (double) stats.skips / total * 100);
 
@@ -429,6 +431,7 @@ void* agent_stats_thread(void *arg) {
       as.sets += conn->stats.sets;
       as.get_misses += conn->stats.get_misses;
       as.skips += conn->stats.skips;
+      as.retransmits += conn->stats.retransmits;
     }
 
     zmq::message_t reply(sizeof(as));
