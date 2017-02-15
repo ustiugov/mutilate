@@ -214,11 +214,9 @@ static void assert_cmdline(void)
 {
 	assert(!args.affinity_given);
 	assert(!args.blocking_given);
-	assert(!args.depth_given);
 	assert(!args.getcount_given);
 	assert(!args.lambda_mul_given);
 	assert(!args.loadonly_given);
-	assert(!args.measure_depth_given);
 	assert(!args.moderate_given);
 	assert(!args.no_nodelay_given);
 	assert(!args.numreqperconn_given);

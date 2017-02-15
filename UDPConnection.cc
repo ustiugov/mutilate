@@ -247,7 +247,10 @@ void UDPConnection::drive_write_machine(double now)
 			write_state = WAITING_FOR_TIME;
 			break;
 		case ISSUING:
-			if (now < next_time) {
+			if (op_queue.size() >= (size_t) options.depth) {
+				write_state = WAITING_FOR_OPQ;
+				break;
+			} else if (now < next_time) {
 				write_state = WAITING_FOR_TIME;
 				break;
 			}
@@ -260,6 +263,18 @@ void UDPConnection::drive_write_machine(double now)
 			if (now < next_time) {
 				if (!event_pending(timer, EV_TIMEOUT, NULL)) {
 					delay = next_time - now;
+					double_to_tv(delay, &tv);
+					evtimer_add(timer, &tv);
+				}
+				return;
+			}
+			write_state = ISSUING;
+			break;
+		case WAITING_FOR_OPQ:
+			if (op_queue.size() >= (size_t) options.depth) {
+				if (!event_pending(timer, EV_TIMEOUT, NULL)) {
+					Operation *op = op_queue.earliest_last_xmit();
+					delay = op->last_xmit + RETRANSMIT_INTERVAL - now;
 					double_to_tv(delay, &tv);
 					evtimer_add(timer, &tv);
 				}
