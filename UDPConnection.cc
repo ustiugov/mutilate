@@ -161,8 +161,6 @@ void timer_cb(evutil_socket_t fd, short what, void *ptr)
 void UDPConnection::issue_get(string *key, double now)
 {
 	Operation op;
-	int l;
-	uint16_t keylen = key->size();
 
 	if (now == 0.0)
 		now = get_time();
@@ -170,7 +168,16 @@ void UDPConnection::issue_get(string *key, double now)
 	op.start_time = now;
 	op.type = Operation::GET;
 	op.req_id = req_id++;
+	op.key = *key;
 	op_queue.push(op);
+
+	issue_get(op);
+}
+
+void UDPConnection::issue_get(Operation &op)
+{
+	int l;
+	uint16_t keylen = op.key.size();
 
 	if (read_state == IDLE)
 		read_state = WAITING_FOR_GET;
@@ -191,7 +198,7 @@ void UDPConnection::issue_get(string *key, double now)
 	iov[0].iov_len = sizeof(udp_header);
 	iov[1].iov_base = &h;
 	iov[1].iov_len = 24;
-	iov[2].iov_base = (void *) key->c_str();
+	iov[2].iov_base = (void *) op.key.c_str();
 	iov[2].iov_len = keylen;
 	size_t ret = writev(fd, iov, sizeof(iov) / sizeof(iov[0]));
 	l = sizeof(udp_header) + 24 + keylen;

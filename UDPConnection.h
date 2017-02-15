@@ -36,6 +36,7 @@ public:
 	void drive_write_machine(double now = 0.0);
 	void issue_something(double now);
 	void issue_get(string *key, double now);
+	void issue_get(Operation &op);
 	void timer_callback(void);
 	void read_callback(void);
 	void pop_op(Operation *op);
