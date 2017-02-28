@@ -385,7 +385,7 @@ void TCPConnection::event_callback(short events) {
     int err = bufferevent_socket_get_dns_error(bev);
     if (err) DIE("DNS error: %s", evutil_gai_strerror(err));
 
-    DIE("BEV_EVENT_ERROR: %s", strerror(errno));
+    CLOSE_AND_DIE("BEV_EVENT_ERROR: %s", strerror(errno));
   } else if (events & BEV_EVENT_EOF) {
     DIE("Unexpected EOF from server.");
   }
