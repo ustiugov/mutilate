@@ -113,4 +113,5 @@ private:
   bool reset_connection();
 
   int src_port;
+  int local_port;
 };

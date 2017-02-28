@@ -124,7 +124,7 @@ void TCPConnection::issue_get(const char* key, double now) {
   }
 #endif
 
-  op.port = src_port;
+  op.port = local_port;
   op.type = Operation::GET;
   op.key = string(key);
 
@@ -171,7 +171,7 @@ void TCPConnection::issue_set(const char* key, const char* value, int length,
   else op.start_time = now;
 #endif
 
-  op.port = src_port;
+  op.port = local_port;
   op.type = Operation::SET;
   op.key = string(key);
   op_queue.push(op);
@@ -365,12 +365,10 @@ void TCPConnection::event_callback(short events) {
     socklen_t len = sizeof(addr);
     int ret = getsockname(fd, (struct sockaddr *) &addr, &len);
     assert(!ret);
-    int local_port = ntohs(addr.sin_port);
+    local_port = ntohs(addr.sin_port);
 
     if (src_port)
       assert(src_port == local_port);
-    else
-      src_port = local_port;
 
     if (!options.no_nodelay) {
       int one = 1;
