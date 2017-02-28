@@ -15,6 +15,10 @@ void log_file_line(log_level_t level, const char *file, int line,
 
 #define DIE(args...) do { W(args); exit(-1); } while (0)
 
+void close_agent_sockets(void);
+
+#define CLOSE_AND_DIE(args...) do { close_agent_sockets(); DIE(args); } while (0)
+
 #define NOLOG(x)                                \
   do { log_level_t old = log_level;             \
   log_level = QUIET;                            \

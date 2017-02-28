@@ -3,7 +3,10 @@
 #include "common.h"
 #include "util.h"
 
-#define CLOSE_AND_DIE(args...) do { for (auto s: agent_sockets) s->close(); DIE(args); } while (0)
+void close_agent_sockets(void) {
+  for (auto s: agent_sockets)
+    s->close();
+}
 
 std::string s_recv (zmq::socket_t &socket) {
   bool ret;
