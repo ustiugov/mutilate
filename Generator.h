@@ -189,6 +189,23 @@ private:
   std::vector< std::pair<double,double> > pv;
 };
 
+class Bimodal : public Generator {
+public:
+  Bimodal(double _ratio, double _v1, double _v2) :
+    ratio(_ratio), v1(_v1), v2(_v2) { }
+
+  virtual double generate(double U = -1.0) {
+    if (U < 0.0) U = drand48();
+    if (U > ratio)
+      return v2;
+    else
+      return v1;
+  }
+
+private:
+  double ratio, v1, v2;
+};
+
 class KeyGenerator {
 public:
   KeyGenerator(Generator* _g, double _max = 10000) : g(_g), max(_max) {}

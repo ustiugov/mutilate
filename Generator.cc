@@ -68,6 +68,7 @@ Generator* createGenerator(std::string str) {
   else if (strcasestr(str.c_str(), "pareto")) return new GPareto(a1, a2, a3);
   else if (strcasestr(str.c_str(), "gev")) return new GEV(a1, a2, a3);
   else if (strcasestr(str.c_str(), "uniform")) return new Uniform(a1);
+  else if (strcasestr(str.c_str(), "bimodal")) return new Bimodal(a1, a2, a3);
   DIE("Unable to create Generator '%s'", str.c_str());
 
   return NULL;
