@@ -77,3 +77,23 @@ Generator* createGenerator(std::string str) {
 void deleteGenerator(Generator* gen) {
   delete gen;
 }
+
+#if TEST
+
+// g++ -DTEST -std=c++11 Generator.cc && ./a.out bimodal:0.1,1,10 50
+
+#include <iostream>
+
+void log_file_line(log_level_t, char const*, int, char const*, ...)
+{
+}
+
+int main(int argc, char **argv)
+{
+  int count = atoi(argv[2]);
+  srand48(time(NULL));
+  Generator *g = createGenerator(argv[1]);
+  for (int i = 0; i < count; i++)
+    std::cout << g->generate() << std::endl;
+}
+#endif
