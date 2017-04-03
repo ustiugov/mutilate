@@ -60,8 +60,6 @@ Generator* createGenerator(std::string str) {
   double a2 = s2 ? atof(s2) : 0.0;
   double a3 = s3 ? atof(s3) : 0.0;
 
-  delete[] s_copy;
-
   if      (strcasestr(str.c_str(), "fixed")) return new Fixed(a1);
   else if (strcasestr(str.c_str(), "normal")) return new Normal(a1, a2);
   else if (strcasestr(str.c_str(), "exponential")) return new Exponential(a1);
@@ -69,7 +67,10 @@ Generator* createGenerator(std::string str) {
   else if (strcasestr(str.c_str(), "gev")) return new GEV(a1, a2, a3);
   else if (strcasestr(str.c_str(), "uniform")) return new Uniform(a1);
   else if (strcasestr(str.c_str(), "bimodal")) return new Bimodal(a1, a2, a3);
+  else if (strcasestr(str.c_str(), "file")) return new FileGenerator(s1);
   DIE("Unable to create Generator '%s'", str.c_str());
+
+  delete[] s_copy;
 
   return NULL;
 }

@@ -11,6 +11,7 @@
 
 #include "config.h"
 
+#include <fstream>
 #include <string>
 #include <vector>
 #include <utility>
@@ -204,6 +205,24 @@ public:
 
 private:
   double ratio, v1, v2;
+};
+
+class FileGenerator : public Generator {
+private:
+  std::vector<double> samples;
+
+public:
+  FileGenerator(const char *filename) {
+    double n;
+    std::ifstream infile(filename);
+    while (infile >> n)
+      samples.push_back(n);
+  }
+
+  virtual double generate(double U = -1.0) {
+    if (U < 0.0) U = drand48();
+    return samples[U * samples.size()];
+  }
 };
 
 class KeyGenerator {
