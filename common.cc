@@ -12,7 +12,12 @@ std::string s_recv (zmq::socket_t &socket) {
   bool ret;
   zmq::message_t message;
   ret = socket.recv(&message);
-  assert(ret == true);
+  if (!ret) {
+    char endpoint[64];
+    size_t size = sizeof(endpoint);
+    socket.getsockopt(ZMQ_LAST_ENDPOINT, endpoint, &size);
+    CLOSE_AND_DIE("s_recv() timeout (%s)", endpoint);
+  }
 
   return std::string(static_cast<char*>(message.data()), message.size());
 }
