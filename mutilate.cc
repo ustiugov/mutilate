@@ -44,7 +44,6 @@
 using namespace std;
 
 gengetopt_args_info args;
-char random_char[2 * 1024 * 1024];  // Buffer used to generate random values.
 
 #ifdef HAVE_LIBZMQ
 vector<zmq::socket_t*> agent_sockets;
@@ -71,17 +70,9 @@ double boot_time;
 pthread_mutex_t all_connections_mutex;
 vector<Connection*> all_connections;
 
-static struct {
-  double prv_time;
-  double start_time;
-  ConnectionStats prv_stats;
-} report_stats_ctx;
-
 struct scan_search_params_struct scan_search_params;
 
 struct scan_search_ctx scans_ctx;
-
-void init_random_stuff();
 
 void go(const vector<string> &servers, options_t &options,
         ConnectionStats &stats
@@ -665,55 +656,6 @@ void* thread_main(void *arg) {
 
 volatile bool received_stop;
 
-static void report_stats_init(void) {
-  report_stats_ctx.prv_time = get_time();
-  report_stats_ctx.start_time = report_stats_ctx.prv_time;
-  printf("# start_time = %f\n", report_stats_ctx.start_time);
-  printf("%-6s ", "#time");
-  report_stats_ctx.prv_stats.print_header();
-}
-
-static bool report_stats_is_time(double now) {
-  return now - report_stats_ctx.prv_time >= args.report_stats_arg;
-}
-
-static ConnectionStats report_stats_get(double now, int qps) {
-  ConnectionStats stats;
-  bool ret;
-  for (Connection *conn: all_connections)
-    stats.accumulate(conn->stats);
-
-  for (auto s: agent_sockets) {
-    agent_stats_tx_stats(s);
-
-    AgentStats as;
-    zmq::message_t message;
-
-    ret = s->recv(&message);
-    assert(ret == true);
-    memcpy(&as, message.data(), sizeof(as));
-    stats.accumulate(as);
-  }
-
-  stats.start = report_stats_ctx.prv_time;
-  stats.stop = now;
-
-  ConnectionStats report_stats = stats;
-  report_stats.substract(report_stats_ctx.prv_stats);
-
-  report_stats_ctx.prv_time = now;
-  report_stats_ctx.prv_stats = stats;
-
-  return report_stats;
-}
-
-static void report_stats_print(double now, int qps, ConnectionStats &report_stats) {
-  printf("%6.3f ", now - report_stats_ctx.start_time);
-  report_stats.print_stats("read", report_stats.get_sampler, false);
-  printf(" %8.1f", report_stats.get_qps());
-  printf(" %8d\n", qps);
-}
-
 void do_mutilate(const vector<string>& servers, options_t& options,
                  ConnectionStats& stats, const vector<int>& src_ports, bool master
 #ifdef HAVE_LIBZMQ
@@ -1058,31 +1000,3 @@ void do_mutilate(const vector<string>& servers, options_t& options,
     if (pthread_join(stats_thread, NULL))
       DIE("pthread_join() failed");
 }
-
-void init_random_stuff() {
-  static char lorem[] =
-    R"(Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas
-turpis dui, suscipit non vehicula non, malesuada id sem. Phasellus
-suscipit nisl ut dui consectetur ultrices tincidunt eros
-aliquet. Donec feugiat lectus sed nibh ultrices ultrices. Vestibulum
-ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia
-Curae; Mauris suscipit eros sed justo lobortis at ultrices lacus
-molestie. Duis in diam mi. Cum sociis natoque penatibus et magnis dis
-parturient montes, nascetur ridiculus mus. Ut cursus viverra
-sagittis. Vivamus non facilisis tortor. Integer lectus arcu, sagittis
-et eleifend rutrum, condimentum eget sem. Vestibulum tempus tellus non
-risus semper semper. Morbi molestie rhoncus mi, in egestas dui
-facilisis et.)";
-
-  size_t cursor = 0;
-
-  while (cursor < sizeof(random_char)) {
-    size_t max = sizeof(lorem);
-    if (sizeof(random_char) - cursor < max)
-      max = sizeof(random_char) - cursor;
-
-    memcpy(&random_char[cursor], lorem, max);
-    cursor += max;
-  }
-}
-

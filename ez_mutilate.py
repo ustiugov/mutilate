@@ -105,9 +105,11 @@ def main():
   master_agent = getopt(sys.argv, None, '--master-agent')
   src_ports_def = getopt(sys.argv, None, '--src-port')
   udp = getopt(sys.argv, None, '--udp', has_value = False)
+  dpdk = getopt(sys.argv, None, '--dpdk', has_value = False)
   sys.argv = rmopt(sys.argv, None, '--master-agent')
   sys.argv = rmopt(sys.argv, None, '--src-port')
   sys.argv = rmopt(sys.argv, None, '--udp', has_value = False)
+  sys.argv = rmopt(sys.argv, None, '--dpdk', has_value = False)
 
   assert master_agent is not None
 
@@ -126,16 +128,25 @@ def main():
       src_ports[host] = ports
 
   if udp:
-    binary = 'mutilateudp'
+    sudo = []
+    binary_latency = 'mutilateudp'
+    binary_throughput = 'mutilateudp'
+  elif dpdk:
+    sudo = ['sudo']
+    binary_latency = 'mutilatedpdk'
+    binary_throughput = 'mutilate'
   else:
-    binary = 'mutilate'
+    sudo = []
+    binary_latency = 'mutilate'
+    binary_throughput = 'mutilate'
 
   cwd = os.path.dirname(os.path.realpath(__file__))
   remotedir = '/tmp/' + getpass.getuser()
 
   for agent in [master_agent] + agents:
     subprocess.check_call(['ssh', agent, 'mkdir', '-p', remotedir])
-    subprocess.call('ssh %s "pkill mutilate; pkill mutilateudp"' % agent, shell = True)
+    subprocess.call('ssh %s "pkill mutilate; pkill mutilateudp; sudo pkill mutilatedpdk"' % agent, shell = True)
+    binary = binary_latency if agent == master_agent else binary_throughput
     subprocess.check_call('scp -q %s/%s %s:%s/%s' % (cwd, binary, agent, remotedir, binary), shell = True)
 
   with Runner() as runner:
@@ -143,15 +154,17 @@ def main():
       params = '--agentmode --threads=16'
       if src_ports is not None:
         params += ' --src-port %s' % src_ports[agent]
-      runner.execute(agent, 'ssh %s stdbuf -oL %s/%s %s < /dev/null' % (agent, remotedir, binary, params))
+      runner.execute(agent, 'ssh %s stdbuf -oL %s/%s %s < /dev/null' % (agent, remotedir, binary_throughput, params))
     params = sys.argv[1:]
     if src_ports is not None:
       params.append('--src-port')
       params.append(src_ports[master_agent])
     try:
-      subprocess.call(['ssh', master_agent, '%s/%s' % (remotedir, binary)] + params, stdin=open('/dev/null', 'r'))
+      cmd = ['ssh', master_agent] + sudo + ['%s/%s' % (remotedir, binary_latency)] + params
+      subprocess.call(cmd, stdin=open('/dev/null', 'r'))
     finally:
-      subprocess.call(['ssh', master_agent, 'pkill', binary])
+      cmd = ['ssh', master_agent] + sudo + ['pkill', binary_latency]
+      subprocess.call(cmd)
 
 if __name__ == '__main__':
   try:

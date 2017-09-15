@@ -57,3 +57,15 @@ env.Program(target='gtest', source=['TestGenerator.cc', 'log.cc', 'util.cc',
                                     'Generator.cc'])
 env.Program(target='mutilateudp', source=Split('''mutilateudp.cc cmdline.cc
   log.cc Generator.cc distributions.cc util.cc common.cc UDPConnection.cc'''))
+
+if 'DPDK' in os.environ or env.GetOption('clean'):
+    env_dpdk = Environment()
+    env_dpdk['DPDK'] = os.environ.get('DPDK', '')
+    env_dpdk['CPPFLAGS'] = '-I$DPDK/include -O2 -Wall -fno-strict-aliasing'
+    env_dpdk['CXXFLAGS'] = '-std=c++0x'
+    env_dpdk['LIBPATH'] = '$DPDK/lib'
+    env_dpdk['LIBS'] = ['dpdk', 'zmq', 'pthread', 'dl']
+    env_dpdk['_LIBFLAGS'] += ' -Wl,-whole-archive -lrte_pmd_ixgbe -Wl,-no-whole-archive'
+    src = Split("""mutilatedpdk.cc DPDKConnection.cc dpdktcp.c""")
+    obj = map(env.Object, Split('''cmdline.cc log.cc Generator.cc distributions.cc util.cc common.cc'''))
+    env_dpdk.Program(target='mutilatedpdk', source=src+obj)

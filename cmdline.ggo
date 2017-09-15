@@ -98,6 +98,12 @@ option "measure_qps" Q "Explicitly set master client QPS, \
 spread across threads and connections." int
 option "measure_depth" D "Set master client connection depth." int
 
+text "\nDPDK options:"
+option "my-mac" - "The MAC address of the agent." string
+option "my-ip" - "The IP address of the agent." string
+option "server-mac" - "The MAC address of the server." string
+option "cpu-core" - "The CPU core to run the agent on." int
+
 text "
 The --measure_* options aid in taking latency measurements of the
 memcached server without incurring significant client-side queuing

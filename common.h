@@ -63,3 +63,8 @@ void connect_agent(void);
 void print_stats(ConnectionStats &stats, double boot_time, double peak_qps);
 void* agent_stats_thread(void *arg);
 void args_to_options(options_t* options);
+void report_stats_init(void);
+bool report_stats_is_time(double now);
+ConnectionStats report_stats_get(double now, int qps);
+void report_stats_print(double now, int qps, ConnectionStats &report_stats);
+void init_random_stuff();
