@@ -8,7 +8,7 @@ void close_agent_sockets(void) {
     s->close();
 }
 
-std::string s_recv (zmq::socket_t &socket) {
+zmq::message_t s_recv_msg(zmq::socket_t &socket) {
   bool ret;
   zmq::message_t message;
   ret = socket.recv(&message);
@@ -19,6 +19,11 @@ std::string s_recv (zmq::socket_t &socket) {
     CLOSE_AND_DIE("s_recv() timeout (%s)", endpoint);
   }
 
+  return message;
+}
+
+std::string s_recv (zmq::socket_t &socket) {
+  zmq::message_t message = s_recv_msg(socket);
   return std::string(static_cast<char*>(message.data()), message.size());
 }
 
@@ -71,7 +76,6 @@ void init_agent(zmq::socket_t &socket, options_t &options, vector<string> &serve
 
 void prep_agent(const vector<string>& servers, options_t& options) {
   int sum = options.lambda_denom;
-  bool ret;
   if (args.measure_connections_given)
     sum = args.measure_connections_arg * options.server_given * options.threads;
 
@@ -88,8 +92,7 @@ void prep_agent(const vector<string>& servers, options_t& options) {
     s->send(message);
 
     zmq::message_t rep;
-    ret = s->recv(&rep);
-    assert(ret == true);
+    rep = s_recv_msg(*s);
     unsigned int num = *((int *) rep.data());
 
     sum += options.connections * (options.roundrobin ?
