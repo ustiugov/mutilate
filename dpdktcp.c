@@ -304,7 +304,7 @@ void dpdk_init(int core, const struct ether_addr *mac, uint32_t ip)
 {
 	int ret;
 	char corestr[8];
-	char *argv[] = { "./a.out", "-l", corestr, "--log-level", "4" };
+	char *argv[] = { "./a.out", "-l", corestr, "--log-level", "4", "-m", "512" };
 
 	sprintf(corestr, "%d", core);
 
