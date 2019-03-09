@@ -225,6 +225,22 @@ public:
   }
 };
 
+class LogNormal : public Generator {
+public:
+  LogNormal(double _mu, double _sigma) :
+    mu(_mu), sigma(_sigma), normal(0, 1) {
+    }
+
+  virtual double generate(double U = -1.0) {
+    double y = normal.generate(U);
+    return exp(mu+y*sigma);
+  }
+
+private:
+  double mu, sigma;
+  Normal normal;
+};
+
 class KeyGenerator {
 public:
   KeyGenerator(Generator* _g, double _max = 10000) : g(_g), max(_max) {}
