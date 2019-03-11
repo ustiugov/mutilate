@@ -137,7 +137,9 @@ static void *agent_thread(void *arg)
 static void agent(void)
 {
 	zmq::socket_t socket(context, ZMQ_REP);
-	socket.bind(string("tcp://*:") + args.agent_port_arg);
+	string str_arg = string("tcp://*:") + args.agent_port_arg;
+	char* chr_arg = const_cast<char*>(str_arg.c_str());
+	socket.bind(chr_arg);
 
 	while (1) {
 		// Synchronizes with prep_agent

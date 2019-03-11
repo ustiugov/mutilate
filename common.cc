@@ -349,7 +349,9 @@ void connect_agent(void) {
     string host = string("tcp://") + string(args.agent_arg[i]) +
       string(":") + string(args.agent_port_arg);
     s->connect(host.c_str());
-    s->setsockopt(ZMQ_RCVTIMEO, 10000);
+    int timeout = 10000;
+    s->setsockopt(ZMQ_RCVTIMEO, &timeout, sizeof(timeout));
+
     agent_sockets.push_back(s);
   }
 }
