@@ -52,9 +52,15 @@ Generator* createGenerator(std::string str) {
     DIE("strtok(.., \":\") failed to parse %s", str.c_str());
 
   saveptr = NULL;
-  char *s1 = strtok_r(a_ptr, ",", &saveptr);
-  char *s2 = strtok_r(NULL, ",", &saveptr);
-  char *s3 = strtok_r(NULL, ",", &saveptr);
+  char *s1 = NULL;
+  char *s2 = NULL;
+  char *s3 = NULL;
+
+  if (a_ptr) {
+    strtok_r(a_ptr, ",", &saveptr);
+    strtok_r(NULL, ",", &saveptr);
+    strtok_r(NULL, ",", &saveptr);
+  }
 
   double a1 = s1 ? atof(s1) : 0.0;
   double a2 = s2 ? atof(s2) : 0.0;
