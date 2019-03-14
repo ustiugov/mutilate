@@ -1,5 +1,6 @@
 #include <arpa/inet.h>
 #include <event2/event.h>
+#include <sys/uio.h>
 #include <unistd.h>
 
 #include <string>
